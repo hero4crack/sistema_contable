@@ -29,6 +29,7 @@ $diferencia = round(abs($sumaTotalDebe - $sumaTotalHaber), 2);
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
             body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; }
             .hoja-contable { box-shadow: none !important; border: none !important; margin: 0 !important; max-width: 100% !important; }
@@ -84,6 +85,11 @@ $diferencia = round(abs($sumaTotalDebe - $sumaTotalHaber), 2);
 
     <!-- Hoja de Impresión -->
     <div class="hoja-contable max-w-5xl mx-auto bg-white p-8 shadow-xl border border-slate-300">
+        <?php
+        $tituloReporte = $esResumen ? 'RESUMEN DE DIARIO POR CUENTA' : 'LIBRO DIARIO LEGAL DETALLADO';
+        $subtituloPeriodo = 'Del ' . date('d/m/Y', strtotime((string)$fechaDesde)) . ' al ' . date('d/m/Y', strtotime((string)$fechaHasta)) . ' • Folio N° ' . $folioStr;
+        require ROOT_PATH . '/views/layouts/membrete_reporte.php';
+        ?>
 
         <?php if ($esResumen): ?>
             <!-- ========================================================================= -->
@@ -260,6 +266,7 @@ $diferencia = round(abs($sumaTotalDebe - $sumaTotalHaber), 2);
             </div>
         <?php endif; ?>
 
+        <?php require ROOT_PATH . '/views/layouts/pie_reporte.php'; ?>
     </div>
 </body>
 </html>

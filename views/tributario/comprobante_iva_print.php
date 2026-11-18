@@ -24,6 +24,7 @@ $totRet   = 0.0;
     <style>
         @page { size: landscape; margin: 12mm; }
         @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
             body { background: #ffffff !important; padding: 0 !important; }
             .hoja-comprobante { box-shadow: none !important; border: none !important; max-width: 100% !important; }
@@ -54,6 +55,11 @@ $totRet   = 0.0;
 
     <!-- HOJA OFICIAL DEL COMPROBANTE DE RETENCIÓN DE IVA -->
     <div class="hoja-comprobante max-w-6xl mx-auto bg-white border border-slate-300 rounded-xl shadow-xl p-8 text-xs">
+        <?php
+        $tituloReporte = 'COMPROBANTE DE RETENCIÓN DE IVA';
+        $subtituloPeriodo = 'Comprobante N° ' . (string)($comp['numero_comprobante'] ?? '') . ' • Período: ' . (string)($comp['periodo_fiscal'] ?? '');
+        require ROOT_PATH . '/views/layouts/membrete_reporte.php';
+        ?>
 
         <!-- TÍTULO Y BASE LEGAL LEY DEL IVA ART. 11 -->
         <div class="text-center border-b-2 border-slate-800 pb-4 mb-5">
@@ -247,6 +253,7 @@ $totRet   = 0.0;
         <p class="mt-8 text-center text-[10px] text-slate-500 border-t border-slate-200 pt-3">
             Este comprobante se emite según lo establecido en la Providencia Administrativa N° SNAT/2015/0049 y Artículo N° 16 de la Providencia Administrativa N° SNAT/2025/000054, publicada en Gaceta Oficial N° 43.171.
         </p>
+        <?php require ROOT_PATH . '/views/layouts/pie_reporte.php'; ?>
     </div>
 
 </body>

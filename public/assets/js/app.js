@@ -61,47 +61,16 @@
     }
 
     /**
-     * Configuración base para alertas de SweetAlert2 adaptada al tema Claro / Oscuro
+     * Configuración base para alertas de SweetAlert2 en tema institucional claro
      */
     function alertaSwal(opciones) {
-        const isDark = document.documentElement.classList.contains('dark');
         return Swal.fire({
-            background: isDark ? '#0f172a' : '#ffffff',
-            color: isDark ? '#f1f5f9' : '#0f172a',
-            confirmButtonColor: '#10b981',
+            background: '#ffffff',
+            color: '#0f172a',
+            confirmButtonColor: '#047857',
             cancelButtonColor: '#475569',
             ...opciones
         });
-    }
-
-    /**
-     * Alterna entre Modo Oscuro ('dark') y Modo Claro ('light') guardando en localStorage
-     */
-    function alternarTema() {
-        const htmlEl = document.documentElement;
-        const esOscuroAhora = htmlEl.classList.contains('dark');
-        const nuevoTema = esOscuroAhora ? 'light' : 'dark';
-
-        if (nuevoTema === 'dark') {
-            htmlEl.classList.add('dark');
-        } else {
-            htmlEl.classList.remove('dark');
-        }
-
-        try {
-            localStorage.setItem('theme', nuevoTema);
-        } catch (e) {
-            // Ignorar si almacenamiento está restringido
-        }
-
-        actualizarEtiquetaTema();
-    }
-
-    function actualizarEtiquetaTema() {
-        const label = document.getElementById('labelThemeMode');
-        if (!label) return;
-        const isDark = document.documentElement.classList.contains('dark');
-        label.textContent = isDark ? 'Modo Claro' : 'Modo Oscuro';
     }
 
     /**
@@ -157,12 +126,40 @@
     // =========================================================================
     // MÓDULO 1: EMPRESAS CLIENTES
     // =========================================================================
+    function resetearPreviewLogoEmpresa(logoPath = null) {
+        const inputLogo = document.getElementById('emp_logo');
+        const imgPreview = document.getElementById('emp_logo_preview');
+        const placeholder = document.getElementById('emp_logo_placeholder');
+        const wrapEliminar = document.getElementById('emp_eliminar_logo_wrap');
+        const chkEliminar = document.getElementById('emp_eliminar_logo');
+
+        if (inputLogo) inputLogo.value = '';
+        if (chkEliminar) chkEliminar.checked = false;
+
+        if (logoPath) {
+            if (imgPreview) {
+                imgPreview.src = `${BASE_URL}/${logoPath.replace(/^\/+/, '')}`;
+                imgPreview.classList.remove('hidden');
+            }
+            placeholder?.classList.add('hidden');
+            wrapEliminar?.classList.remove('hidden');
+        } else {
+            if (imgPreview) {
+                imgPreview.src = '';
+                imgPreview.classList.add('hidden');
+            }
+            placeholder?.classList.remove('hidden');
+            wrapEliminar?.classList.add('hidden');
+        }
+    }
+
     function abrirModalNuevaEmpresa() {
         const modal = document.getElementById('modalEmpresaForm');
         const form = document.getElementById('formEmpresaCliente');
         if (!modal || !form) return;
 
         form.reset();
+        resetearPreviewLogoEmpresa(null);
         document.getElementById('emp_id').value = '0';
         document.getElementById('tituloModalEmpresa').textContent = 'Registrar Nueva Empresa Cliente';
         document.getElementById('subtituloModalEmpresa').textContent = 'Clonación automática de 179 cuentas del Plan de Cuentas Base activada';
@@ -194,6 +191,7 @@
             document.getElementById('emp_periodo_fiscal_activo').value = emp.periodo_fiscal_activo || '';
             document.getElementById('emp_valor_unidad_tributaria').value = emp.valor_unidad_tributaria ?? '9.00';
             document.getElementById('emp_monto_cestaticket').value = emp.monto_cestaticket_mensual ?? '1800.00';
+            resetearPreviewLogoEmpresa(emp.logo_path || null);
 
             document.getElementById('tituloModalEmpresa').textContent = `Editar Empresa: ${emp.rif}`;
             document.getElementById('subtituloModalEmpresa').textContent = emp.razon_social;
@@ -312,26 +310,26 @@
             const indentPx = (nivel - 1) * 14;
 
             return `
-                <tr class="${esMovimiento ? 'hover:bg-slate-800/50 text-slate-200' : 'bg-slate-950/60 font-semibold text-white'}">
-                    <td class="py-2.5 px-5 font-mono ${esMovimiento ? 'text-emerald-400' : 'text-teal-300 font-bold'}">
+                <tr class="${esMovimiento ? 'hover:bg-slate-50 text-slate-700' : 'bg-slate-100 font-semibold text-slate-900'}">
+                    <td class="py-2.5 px-5 font-mono ${esMovimiento ? 'text-emerald-700' : 'text-emerald-800 font-bold'}">
                         ${escapeHtml(c.codigo)}
                     </td>
                     <td class="py-2.5 px-4" style="padding-left: ${16 + indentPx}px;">
                         ${escapeHtml(c.nombre)}
                     </td>
-                    <td class="py-2.5 px-4 font-mono text-[11px] text-slate-300">
+                    <td class="py-2.5 px-4 font-mono text-[11px] text-slate-600">
                         ${escapeHtml(c.tipo)}
                     </td>
-                    <td class="py-2.5 px-4 font-mono text-[11px] ${c.naturaleza === 'DEUDORA' ? 'text-sky-300' : 'text-amber-300'}">
+                    <td class="py-2.5 px-4 font-mono text-[11px] ${c.naturaleza === 'DEUDORA' ? 'text-sky-700' : 'text-amber-700'}">
                         ${escapeHtml(c.naturaleza)}
                     </td>
-                    <td class="py-2.5 px-4 text-center font-mono text-slate-400">
+                    <td class="py-2.5 px-4 text-center font-mono text-slate-500">
                         N${nivel}
                     </td>
                     <td class="py-2.5 px-5 text-right">
                         ${esMovimiento
-                            ? '<span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">Imputable</span>'
-                            : '<span class="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-400 border border-slate-700">Grupo</span>'
+                            ? '<span class="px-2 py-0.5 rounded text-[10px] font-mono bg-emerald-50 text-emerald-700 border border-emerald-200">Imputable</span>'
+                            : '<span class="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-100 text-slate-600 border border-slate-200">Grupo</span>'
                         }
                     </td>
                 </tr>
@@ -381,9 +379,9 @@
         document.querySelectorAll('.btn-filtro-grupo').forEach((btn) => {
             const btnGrupo = btn.getAttribute('data-grupo') || '';
             if (btnGrupo === grupoFiltroPlanPage) {
-                btn.className = 'btn-filtro-grupo px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border bg-emerald-600 text-white border-emerald-500 shadow-sm';
+                btn.className = 'btn-filtro-grupo px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border bg-emerald-700 text-white border-emerald-700 shadow-sm';
             } else {
-                btn.className = 'btn-filtro-grupo px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border bg-slate-950 text-slate-300 border-slate-800 hover:bg-slate-800';
+                btn.className = 'btn-filtro-grupo px-3 py-1.5 rounded-xl text-xs font-semibold transition-all border bg-white text-slate-700 border-slate-300 hover:bg-slate-50';
             }
         });
         aplicarFiltroPlanPage();
@@ -523,28 +521,28 @@
         ].join('');
 
         const tr = document.createElement('tr');
-        tr.className = 'fila-renglon-asiento hover:bg-slate-800/30 transition-colors';
+        tr.className = 'fila-renglon-asiento hover:bg-slate-50 transition-colors';
         tr.innerHTML = `
-            <td class="py-2 px-3 text-center font-mono text-slate-400 num-renglon">${indice}</td>
+            <td class="py-2 px-3 text-center font-mono text-slate-500 num-renglon">${indice}</td>
             <td class="py-2 px-3">
-                <select class="input-cuenta w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none" required>
+                <select class="input-cuenta w-full bg-white border border-slate-300 focus:border-emerald-600 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 focus:outline-none" required>
                     ${optionsHtml}
                 </select>
             </td>
             <td class="py-2 px-3">
-                <input type="text" class="input-descripcion w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-lg px-2.5 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none"
+                <input type="text" class="input-descripcion w-full bg-white border border-slate-300 focus:border-emerald-600 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none"
                        placeholder="Detalle del movimiento (opcional)" value="${escapeHtml(datos.descripcion || '')}">
             </td>
             <td class="py-2 px-3">
-                <input type="number" step="0.01" min="0" class="input-debe w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-lg px-2.5 py-1.5 text-xs font-mono text-right text-white focus:outline-none"
+                <input type="number" step="0.01" min="0" class="input-debe w-full bg-white border border-slate-300 focus:border-emerald-600 rounded-lg px-2.5 py-1.5 text-xs font-mono text-right text-slate-900 focus:outline-none"
                        value="${datos.debe ?? '0.00'}">
             </td>
             <td class="py-2 px-3">
-                <input type="number" step="0.01" min="0" class="input-haber w-full bg-slate-950 border border-slate-700 focus:border-emerald-500 rounded-lg px-2.5 py-1.5 text-xs font-mono text-right text-white focus:outline-none"
+                <input type="number" step="0.01" min="0" class="input-haber w-full bg-white border border-slate-300 focus:border-emerald-600 rounded-lg px-2.5 py-1.5 text-xs font-mono text-right text-slate-900 focus:outline-none"
                        value="${datos.haber ?? '0.00'}">
             </td>
             <td class="py-2 px-3 text-center">
-                <button type="button" class="btn-quitar-fila p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors" title="Quitar línea">
+                <button type="button" class="btn-quitar-fila p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Quitar línea">
                     <svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                     </svg>
@@ -778,9 +776,9 @@
 
         document.querySelectorAll('.btn-tab-estado').forEach((btn) => {
             if (btn.getAttribute('data-tab') === tab) {
-                btn.className = 'btn-tab-estado px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-emerald-600 text-white border-emerald-500 shadow-sm';
+                btn.className = 'btn-tab-estado px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-emerald-700 text-white border-emerald-700 shadow-sm';
             } else {
-                btn.className = 'btn-tab-estado px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-slate-950 text-slate-300 border-slate-800 hover:bg-slate-800';
+                btn.className = 'btn-tab-estado px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-white text-slate-700 border-slate-300 hover:bg-slate-50';
             }
         });
 
@@ -846,9 +844,9 @@
 
         document.querySelectorAll('.btn-tab-libro').forEach((btn) => {
             if (btn.getAttribute('data-tab') === tab) {
-                btn.className = 'btn-tab-libro px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-emerald-600 text-white border-emerald-500 shadow-sm';
+                btn.className = 'btn-tab-libro px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-emerald-700 text-white border-emerald-700 shadow-sm';
             } else {
-                btn.className = 'btn-tab-libro px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-slate-950 text-slate-300 border-slate-800 hover:bg-slate-800';
+                btn.className = 'btn-tab-libro px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-white text-slate-700 border-slate-300 hover:bg-slate-50';
             }
         });
 
@@ -876,9 +874,9 @@
 
         document.querySelectorAll('.btn-tab-ret').forEach((btn) => {
             if (btn.getAttribute('data-tab') === tab) {
-                btn.className = 'btn-tab-ret px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-emerald-600 text-white border-emerald-500 shadow-sm';
+                btn.className = 'btn-tab-ret px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-emerald-700 text-white border-emerald-700 shadow-sm';
             } else {
-                btn.className = 'btn-tab-ret px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-slate-950 text-slate-300 border-slate-800 hover:bg-slate-800';
+                btn.className = 'btn-tab-ret px-4 py-2 rounded-xl text-xs font-semibold transition-all border bg-white text-slate-700 border-slate-300 hover:bg-slate-50';
             }
         });
 
@@ -1047,7 +1045,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         initSidebar();
         initRifFormatter();
-        actualizarEtiquetaTema();
 
         // Selector desplegable global de empresa activa
         const selectorGlobal = document.getElementById('selectorEmpresaGlobal');
@@ -1057,7 +1054,27 @@
             });
         }
 
-        // Formulario de Empresa Cliente
+        // Vista previa instantánea del logo en modal de Empresa Cliente
+        const inputLogo = document.getElementById('emp_logo');
+        if (inputLogo) {
+            inputLogo.addEventListener('change', (e) => {
+                const file = e.target.files?.[0];
+                const imgPreview = document.getElementById('emp_logo_preview');
+                const placeholder = document.getElementById('emp_logo_placeholder');
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    if (imgPreview) {
+                        imgPreview.src = String(ev.target?.result || '');
+                        imgPreview.classList.remove('hidden');
+                    }
+                    placeholder?.classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Formulario de Empresa Cliente (FormData para soportar carga de logo)
         const formEmpresa = document.getElementById('formEmpresaCliente');
         if (formEmpresa) {
             formEmpresa.addEventListener('submit', async (e) => {
@@ -1067,12 +1084,12 @@
                 btnSubmit.disabled = true;
                 btnSubmit.textContent = 'Procesando...';
 
-                const payload = Object.fromEntries(new FormData(formEmpresa).entries());
+                const formData = new FormData(formEmpresa);
 
                 try {
                     const res = await requestJson(`${BASE_URL}/index.php?c=empresa&a=guardar`, {
                         method: 'POST',
-                        body: payload
+                        body: formData
                     });
 
                     cerrarModalEmpresa();
@@ -2128,7 +2145,6 @@
 
     // Exponer APIs públicas
     window.JurisApp = {
-        alternarTema,
         cambiarEmpresaActiva,
         abrirModalNuevaEmpresa,
         abrirModalEditarEmpresa,

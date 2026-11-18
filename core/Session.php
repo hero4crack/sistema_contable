@@ -99,6 +99,7 @@ final class Session
         $_SESSION['empresa_activa_periodo']  = (string)$empresa['periodo_fiscal_activo'];
         $_SESSION['empresa_activa_ret_iva']  = (string)$empresa['porcentaje_retencion_iva'];
         $_SESSION['empresa_activa_tasa_bcv'] = (float)($empresa['tasa_bcv_usd'] ?? 45.00);
+        $_SESSION['empresa_activa_logo']     = (string)($empresa['logo_path'] ?? '');
     }
 
     /**

@@ -51,6 +51,7 @@ CREATE TABLE `empresas` (
   `porcentaje_retencion_iva` ENUM('0', '75', '100') NOT NULL DEFAULT '75',
   `periodo_fiscal_activo` CHAR(7) NOT NULL DEFAULT '2026-11' COMMENT 'Formato YYYY-MM',
   `moneda_principal` VARCHAR(10) NOT NULL DEFAULT 'VES',
+  `logo_path` VARCHAR(255) NULL DEFAULT NULL,
   `activo` TINYINT(1) NOT NULL DEFAULT 1,
   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -498,6 +499,95 @@ CREATE TABLE `cestaticket_detalles` (
   CONSTRAINT `fk_cest_det_lote` FOREIGN KEY (`lote_id`) REFERENCES `cestaticket_lotes` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_cest_det_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `fk_cest_det_trabajador` FOREIGN KEY (`trabajador_id`) REFERENCES `trabajadores` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------------------------------
+-- 17. Cuentas Bancarias por Empresa (Enlace Bancario)
+-- -----------------------------------------------------------------------------
+DROP TABLE IF EXISTS `conciliaciones_bancarias`;
+DROP TABLE IF EXISTS `movimientos_bancarios`;
+DROP TABLE IF EXISTS `cuentas_bancarias`;
+
+CREATE TABLE `cuentas_bancarias` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `empresa_id` INT UNSIGNED NOT NULL,
+  `banco_nombre` VARCHAR(100) NOT NULL,
+  `codigo_sudeban` VARCHAR(10) NOT NULL,
+  `numero_cuenta` CHAR(20) NOT NULL,
+  `tipo_cuenta` ENUM('Corriente', 'Ahorro', 'Custodia Divisas') NOT NULL DEFAULT 'Corriente',
+  `moneda` ENUM('VES', 'USD') NOT NULL DEFAULT 'VES',
+  `cuenta_contable_id` INT UNSIGNED NULL DEFAULT NULL,
+  `saldo_inicial` DECIMAL(18,2) NOT NULL DEFAULT 0.00,
+  `saldo_actual` DECIMAL(18,2) NOT NULL DEFAULT 0.00,
+  `estatus` ENUM('Activa', 'Inactiva') NOT NULL DEFAULT 'Activa',
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_cuenta_bancaria_emp` (`empresa_id`, `numero_cuenta`),
+  KEY `idx_cb_empresa_estatus` (`empresa_id`, `estatus`),
+  KEY `idx_cb_cuenta_contable` (`cuenta_contable_id`),
+  CONSTRAINT `fk_cb_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_cb_plan_cuentas` FOREIGN KEY (`cuenta_contable_id`) REFERENCES `plan_cuentas` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------------------------------
+-- 18. Movimientos Bancarios (Estado de Cuenta / Libro Auxiliar)
+-- -----------------------------------------------------------------------------
+CREATE TABLE `movimientos_bancarios` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `empresa_id` INT UNSIGNED NOT NULL,
+  `cuenta_bancaria_id` INT UNSIGNED NOT NULL,
+  `fecha_operacion` DATE NOT NULL,
+  `referencia` VARCHAR(60) NOT NULL,
+  `tipo_movimiento` ENUM(
+    'Nota de Crédito / Depósito',
+    'Transferencia Recibida',
+    'Nota de Débito / Comisión',
+    'Transferencia Emitida',
+    'Pago Móvil',
+    'Cheque'
+  ) NOT NULL DEFAULT 'Transferencia Recibida',
+  `descripcion` VARCHAR(255) NOT NULL,
+  `monto_debe` DECIMAL(18,2) NOT NULL DEFAULT 0.00,
+  `monto_haber` DECIMAL(18,2) NOT NULL DEFAULT 0.00,
+  `conciliado` TINYINT(1) NOT NULL DEFAULT 0,
+  `asiento_id` INT UNSIGNED NULL DEFAULT NULL,
+  `periodo_conciliacion` CHAR(7) NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_mb_emp_cuenta_periodo` (`empresa_id`, `cuenta_bancaria_id`, `periodo_conciliacion`),
+  KEY `idx_mb_dup` (`cuenta_bancaria_id`, `fecha_operacion`, `referencia`),
+  KEY `idx_mb_asiento` (`asiento_id`),
+  CONSTRAINT `fk_mb_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_mb_cuenta` FOREIGN KEY (`cuenta_bancaria_id`) REFERENCES `cuentas_bancarias` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_mb_asiento` FOREIGN KEY (`asiento_id`) REFERENCES `asientos` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- -----------------------------------------------------------------------------
+-- 19. Conciliaciones Bancarias Mensuales
+-- -----------------------------------------------------------------------------
+CREATE TABLE `conciliaciones_bancarias` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `empresa_id` INT UNSIGNED NOT NULL,
+  `cuenta_bancaria_id` INT UNSIGNED NOT NULL,
+  `periodo` CHAR(7) NOT NULL,
+  `saldo_segun_banco` DECIMAL(18,2) NOT NULL DEFAULT 0.00,
+  `saldo_segun_libros` DECIMAL(18,2) NOT NULL DEFAULT 0.00,
+  `depositos_en_transito` DECIMAL(18,2) NOT NULL DEFAULT 0.00,
+  `cheques_en_transito` DECIMAL(18,2) NOT NULL DEFAULT 0.00,
+  `notas_debito_no_registradas` DECIMAL(18,2) NOT NULL DEFAULT 0.00,
+  `notas_credito_no_registradas` DECIMAL(18,2) NOT NULL DEFAULT 0.00,
+  `diferencia` DECIMAL(18,2) NOT NULL DEFAULT 0.00,
+  `estatus` ENUM('Borrador', 'Conciliada') NOT NULL DEFAULT 'Borrador',
+  `fecha_cierre` DATETIME NULL DEFAULT NULL,
+  `observaciones` TEXT NULL DEFAULT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_conc_emp_cuenta_per` (`empresa_id`, `cuenta_bancaria_id`, `periodo`),
+  KEY `idx_conc_cuenta` (`cuenta_bancaria_id`),
+  CONSTRAINT `fk_conc_empresa` FOREIGN KEY (`empresa_id`) REFERENCES `empresas` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_conc_cuenta` FOREIGN KEY (`cuenta_bancaria_id`) REFERENCES `cuentas_bancarias` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT IGNORE INTO `conceptos_islr` (`codigo`, `nombre`, `tipo_persona`, `porcentaje_base`, `tarifa_porcentaje`, `aplica_sustraendo`, `activo`) VALUES

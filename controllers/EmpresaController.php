@@ -149,11 +149,39 @@ final class EmpresaController extends Controller
             'periodo_fiscal_activo'     => $periodoFiscalActivo,
             'valor_unidad_tributaria'   => $valorUnidadTributaria,
             'monto_cestaticket_mensual' => $montoCestaticket,
+            'eliminar_logo'             => !empty($input['eliminar_logo']),
         ];
+
+        // Procesar subida segura de Logo de la Empresa (.png, .jpg, .jpeg, .webp, máx. 2MB)
+        $logoAnterior = '';
+        if ($id > 0) {
+            $empActual = $empresaModel->obtenerPorId($id);
+            $logoAnterior = (string)($empActual['logo_path'] ?? '');
+        }
+
+        if (isset($_FILES['logo']) && is_array($_FILES['logo']) && (int)($_FILES['logo']['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_NO_FILE) {
+            try {
+                $datos['logo_path'] = $this->procesarSubidaLogo($_FILES['logo'], $rif);
+            } catch (Throwable $e) {
+                $this->json([
+                    'ok'      => false,
+                    'message' => $e->getMessage(),
+                ], 422);
+            }
+        }
 
         try {
             if ($id > 0) {
                 $empresaModel->actualizar($id, $datos);
+
+                // Eliminar archivo físico anterior si se reemplazó o eliminó el logo
+                if ($logoAnterior !== '' && (!empty($datos['logo_path']) || !empty($datos['eliminar_logo']))) {
+                    $rutaAnterior = ROOT_PATH . '/public/' . ltrim($logoAnterior, '/');
+                    if (is_file($rutaAnterior)) {
+                        @unlink($rutaAnterior);
+                    }
+                }
+
                 $empresaActualizada = $empresaModel->obtenerPorId($id);
 
                 // Si la empresa editada es la empresa activa en sesión, refrescar sus variables de sesión
@@ -439,5 +467,60 @@ final class EmpresaController extends Controller
             'fecha_vigencia' => $fechaVigencia,
             'message'        => sprintf('Tasa Oficial BCV obtenida en línea: Bs. %s / USD', number_format($tasaDetectada, 4, ',', '.')),
         ]);
+    }
+
+    /**
+     * Valida y guarda de forma segura el logo de una empresa cliente en public/uploads/logos/
+     */
+    private function procesarSubidaLogo(array $archivo, string $rif): string
+    {
+        $error = (int)($archivo['error'] ?? UPLOAD_ERR_NO_FILE);
+        if ($error !== UPLOAD_ERR_OK) {
+            throw new \RuntimeException('Error al subir el archivo de logo (código ' . $error . ').');
+        }
+
+        $tamano = (int)($archivo['size'] ?? 0);
+        if ($tamano <= 0 || $tamano > (2 * 1024 * 1024)) {
+            throw new \RuntimeException('El logo de la empresa no debe superar los 2 MB.');
+        }
+
+        $tmpPath = (string)($archivo['tmp_name'] ?? '');
+        if ($tmpPath === '' || !is_uploaded_file($tmpPath)) {
+            throw new \RuntimeException('Archivo de logo no válido.');
+        }
+
+        $nombreOriginal = (string)($archivo['name'] ?? '');
+        $ext = strtolower(pathinfo($nombreOriginal, PATHINFO_EXTENSION));
+        $extPermitidas = ['png', 'jpg', 'jpeg', 'webp'];
+
+        if (!in_array($ext, $extPermitidas, true)) {
+            throw new \RuntimeException('Formato de logo no permitido. Solo se aceptan imágenes PNG, JPG, JPEG o WEBP.');
+        }
+
+        $infoImagen = @getimagesize($tmpPath);
+        if ($infoImagen === false) {
+            throw new \RuntimeException('El archivo subido no es una imagen válida.');
+        }
+
+        $mime = (string)($infoImagen['mime'] ?? '');
+        $mimesPermitidos = ['image/png', 'image/jpeg', 'image/webp'];
+        if (!in_array($mime, $mimesPermitidos, true)) {
+            throw new \RuntimeException('Tipo MIME de imagen no permitido (' . $mime . ').');
+        }
+
+        $dirDestino = ROOT_PATH . '/public/uploads/logos';
+        if (!is_dir($dirDestino) && !@mkdir($dirDestino, 0775, true) && !is_dir($dirDestino)) {
+            throw new \RuntimeException('No se pudo crear el directorio public/uploads/logos/.');
+        }
+
+        $rifLimpio = preg_replace('/[^A-Z0-9]/i', '', $rif) ?: 'EMP';
+        $nombreArchivo = sprintf('logo_%s_%s.%s', strtolower($rifLimpio), bin2hex(random_bytes(5)), $ext);
+        $rutaDestino = $dirDestino . '/' . $nombreArchivo;
+
+        if (!move_uploaded_file($tmpPath, $rutaDestino)) {
+            throw new \RuntimeException('No se pudo guardar el archivo de logo en el servidor.');
+        }
+
+        return 'uploads/logos/' . $nombreArchivo;
     }
 }

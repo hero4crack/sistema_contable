@@ -88,10 +88,20 @@ sistema_contable/
 │       ├── cestaticket.php       # Control y Liquidación Mensual de Bono de Alimentación (Ley Cestaticket)
 │       ├── recibos.php           # Centro de Consulta e Impresión Masiva/Individual de Recibos
 │       └── recibo_print.php      # Vista Imprimible de Recibos de Nómina (Art. 106 LOTTT) y Cestaticket (Art. 4)
+│   └── layouts/
+│       ├── header.php            # Cabecera HTML institucional clara (Blanco + Verde Esmeralda) y @media print
+│       ├── sidebar.php           # Navegación lateral con logotipo Juris Contable y selector de empresa activa
+│       ├── footer.php            # Cierre de layout y carga de scripts
+│       ├── membrete_reporte.php  # Membrete oficial reutilizable con logo del cliente, RIF y título de reporte
+│       └── pie_reporte.php       # Pie institucional uniforme para reportes y recibos imprimibles
 ├── public/
 │   ├── index.php                 # Front Controller y enrutador MVC (?c=controlador&a=accion)
 │   ├── .htaccess                 # Protección y manejo de rutas en public/
+│   ├── uploads/
+│   │   └── logos/                # Logotipos cargados por cada empresa cliente (PNG/JPG/WEBP, máx. 2MB)
 │   └── assets/
+│       ├── img/
+│       │   └── logo-juris-contable.png # Logotipo oficial del sistema Juris Contable
 │       └── js/
 │           └── app.js            # Lógica global: cambio de empresa activa, modales, Fetch wrapper con CSRF
 └── database/
@@ -123,3 +133,11 @@ sistema_contable/
 - Registro de trabajadores por empresa (Cédula, Cargo, Salario Base, Fecha de Ingreso, Riesgo IVSS).
 - Procesamiento de Nómina Quincenal/Mensual con cálculo automático de SSO (4%), RPE (0.5%), FAOV (1%), Aportes Patronales y Cestaticket.
 - Generación de Recibos de Pago e integración opcional con asiento contable de nómina.
+
+---
+
+## 5. Identidad Visual Institucional y Membrete Oficial
+- **Paleta Institucional:** Modo claro único en **Blanco (`#FFFFFF` / `#F8FAFC`)** y **Verde Esmeralda (`emerald-700` / `#047857`)**, sin modo oscuro ni interruptores de tema.
+- **Logotipo del Sistema:** `public/assets/img/logo-juris-contable.png` integrado en `views/auth/login.php` y `views/layouts/sidebar.php`.
+- **Logotipos por Empresa Cliente:** Columna `empresas.logo_path` (`VARCHAR(255) NULL`), carga segura mediante `POST + CSRF` (`multipart/form-data`) en `EmpresaController::guardar()`, almacenamiento en `public/uploads/logos/` y previsualización en el directorio y selector de empresa activa.
+- **Membrete Oficial Unificado:** `views/layouts/membrete_reporte.php` y `views/layouts/pie_reporte.php` integrados en los reportes contables, libros fiscales, comprobantes de retención IVA/ISLR, sábana de nómina y recibos imprimibles, con reglas `@media print` (`print-color-adjust: exact`).

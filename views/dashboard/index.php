@@ -128,8 +128,30 @@ $escritorioStats= $m['escritorio'] ?? ['total_empresas' => 0, 'empresas_activas'
             </div>
         </div>
 
-        <!-- 4 TARJETAS KPI CONECTADAS A LA BASE DE DATOS (EMPRESA ACTIVA) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <!-- TARJETAS KPI CONECTADAS A LA BASE DE DATOS (EMPRESA ACTIVA) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
+            <!-- KPI BANCOS: Saldo Total en Bancos -->
+            <a href="<?= e(route_url('bancos', 'index')) ?>" class="rounded-2xl bg-slate-900 border border-slate-800 p-5 flex flex-col justify-between hover:border-emerald-500/60 transition-all block">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Saldo Total en Bancos</p>
+                        <h3 class="mt-2 text-2xl font-mono font-bold text-white">
+                            <?= formato_ves((float)($bancosStats['saldo_ves'] ?? 0)) ?>
+                        </h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11m16-11v11M8 14v3m4-3v3m4-3v3"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs">
+                    <span class="text-slate-400">Cuentas activas: <?= (int)($bancosStats['total_cuentas'] ?? 0) ?></span>
+                    <span class="font-mono font-semibold text-emerald-300">
+                        USD: $ <?= number_format((float)($bancosStats['saldo_usd'] ?? 0), 2, ',', '.') ?>
+                    </span>
+                </div>
+            </a>
             <!-- KPI 1: Plan de Cuentas -->
             <div class="rounded-2xl bg-slate-900 border border-slate-800 p-5 flex flex-col justify-between hover:border-slate-700 transition-all">
                 <div class="flex items-start justify-between">

@@ -20,6 +20,13 @@ foreach (($asientos ?? []) as $aItem) {
 
 <div class="max-w-7xl mx-auto space-y-6">
 
+    <?php
+    $tituloReporte    = 'LIBRO DIARIO GENERAL';
+    $subtituloPeriodo = 'Del ' . date('d/m/Y', strtotime((string)($fechaDesde ?? date('Y-m-01')))) . ' al ' . date('d/m/Y', strtotime((string)($fechaHasta ?? date('Y-m-d'))));
+    $claseContenedor  = 'hidden print:block mb-5';
+    require ROOT_PATH . '/views/layouts/membrete_reporte.php';
+    ?>
+
     <!-- ENCABEZADO DEL MÓDULO LIBRO DIARIO -->
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 no-print">
         <div>
@@ -412,6 +419,10 @@ foreach (($asientos ?? []) as $aItem) {
         <?php endif; ?>
     </div>
 
+    <?php
+    $clasePie = 'hidden print:flex mt-6 pt-3 border-t border-slate-300';
+    require ROOT_PATH . '/views/layouts/pie_reporte.php';
+    ?>
 </div>
 
 <!-- MODAL VER DETALLE DEL COMPROBANTE CONTABLE -->

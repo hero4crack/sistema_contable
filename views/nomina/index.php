@@ -339,7 +339,7 @@ $filasPrecalculo = $precalculo['filas'] ?? [];
                         Exportar Excel (CSV)
                     </a>
                     <button type="button" onclick="window.print()"
-                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition">
+                            class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
                         Imprimir Sábana
                     </button>
                     <a href="<?= e(route_url('nomina', 'reciboPrint', ['nomina_id' => $loteSeleccionado['id']])) ?>"
@@ -356,6 +356,13 @@ $filasPrecalculo = $precalculo['filas'] ?? [];
                     <?php endif; ?>
                 </div>
             </div>
+
+            <?php
+            $tituloReporte    = 'SÁBANA DE NÓMINA — ' . (string)$loteSeleccionado['codigo_nomina'];
+            $subtituloPeriodo = 'Del ' . date('d/m/Y', strtotime((string)$loteSeleccionado['fecha_desde'])) . ' al ' . date('d/m/Y', strtotime((string)$loteSeleccionado['fecha_hasta']));
+            $claseContenedor  = 'hidden print:block mb-4';
+            require ROOT_PATH . '/views/layouts/membrete_reporte.php';
+            ?>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs">
@@ -419,6 +426,10 @@ $filasPrecalculo = $precalculo['filas'] ?? [];
                     </tfoot>
                 </table>
             </div>
+            <?php
+            $clasePie = 'hidden print:flex mt-6 pt-3 border-t border-slate-300';
+            require ROOT_PATH . '/views/layouts/pie_reporte.php';
+            ?>
         <?php endif; ?>
     </div>
 </div>

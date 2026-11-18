@@ -13,6 +13,7 @@ $comp = $comprobante ?? [];
     <style>
         @page { size: landscape; margin: 12mm; }
         @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
             body { background: #ffffff !important; padding: 0 !important; }
             .hoja-comprobante { box-shadow: none !important; border: none !important; max-width: 100% !important; }
@@ -43,6 +44,11 @@ $comp = $comprobante ?? [];
 
     <!-- HOJA OFICIAL DEL COMPROBANTE DE RETENCIÓN DE ISLR -->
     <div class="hoja-comprobante max-w-5xl mx-auto bg-white border border-slate-300 rounded-xl shadow-xl p-8 text-xs">
+        <?php
+        $tituloReporte = 'COMPROBANTE DE RETENCIÓN DE ISLR';
+        $subtituloPeriodo = 'Comprobante N° ' . (string)($comp['numero_comprobante'] ?? '') . ' • Emisión: ' . date('d/m/Y', strtotime((string)$comp['fecha_emision']));
+        require ROOT_PATH . '/views/layouts/membrete_reporte.php';
+        ?>
 
         <!-- TÍTULO Y BASE LEGAL DECRETO 1.808 -->
         <div class="text-center border-b-2 border-slate-800 pb-4 mb-5">
@@ -195,6 +201,7 @@ $comp = $comprobante ?? [];
             </div>
         </div>
 
+        <?php require ROOT_PATH . '/views/layouts/pie_reporte.php'; ?>
     </div>
 
 </body>

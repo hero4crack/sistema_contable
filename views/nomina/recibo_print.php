@@ -15,6 +15,7 @@ $tituloDoc     = $esCestaticket
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
             body { background: #ffffff !important; color: #000000 !important; }
             .page-break { page-break-after: always; }
@@ -53,32 +54,11 @@ $tituloDoc     = $esCestaticket
             $esUltimo = ($idx === count($recibos) - 1);
             ?>
             <div class="bg-white border-2 border-slate-800 rounded-xl p-6 shadow-sm <?= !$esUltimo ? 'page-break' : '' ?>">
-                <!-- Membrete de la Empresa Activa -->
-                <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-4 border-b-2 border-slate-800">
-                    <div>
-                        <h2 class="text-lg font-extrabold uppercase tracking-tight text-slate-900">
-                            <?= e((string)$empresa['razon_social']) ?>
-                        </h2>
-                        <p class="text-xs font-mono font-bold text-slate-700">
-                            RIF: <?= e((string)$empresa['rif']) ?>
-                        </p>
-                        <p class="text-[11px] text-slate-600 max-w-xl mt-0.5">
-                            <?= e((string)$empresa['direccion_fiscal']) ?>
-                        </p>
-                    </div>
-
-                    <div class="text-left sm:text-right font-mono">
-                        <span class="inline-block px-3 py-1 rounded bg-slate-900 text-white text-xs font-bold uppercase">
-                            <?= $esCestaticket ? 'RECIBO DE CESTATICKET' : 'RECIBO DE PAGO LOTTT' ?>
-                        </span>
-                        <div class="text-xs font-bold text-slate-800 mt-1.5">
-                            Lote: <?= e((string)($esCestaticket ? $r['codigo_lote'] : $r['codigo_nomina'])) ?>
-                        </div>
-                        <div class="text-[11px] text-slate-600">
-                            Período: <?= e((string)$r['periodo']) ?>
-                        </div>
-                    </div>
-                </div>
+                <?php
+                $tituloReporte = $esCestaticket ? 'RECIBO DE CESTATICKET SOCIALISTA' : 'RECIBO DE PAGO DE NÓMINA (LOTTT)';
+                $subtituloPeriodo = 'Lote: ' . (string)($esCestaticket ? $r['codigo_lote'] : $r['codigo_nomina']) . ' • Período: ' . (string)($r['periodo'] ?? '');
+                require ROOT_PATH . '/views/layouts/membrete_reporte.php';
+                ?>
 
                 <!-- Datos del Trabajador -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 py-3 px-4 my-3 bg-slate-100 rounded-lg border border-slate-300 text-xs">
@@ -286,6 +266,7 @@ $tituloDoc     = $esCestaticket
                         </div>
                     </div>
                 </div>
+                <?php require ROOT_PATH . '/views/layouts/pie_reporte.php'; ?>
             </div>
         <?php endforeach; ?>
     </div>

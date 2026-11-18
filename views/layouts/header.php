@@ -4,17 +4,17 @@ declare(strict_types=1);
 use Core\Csrf;
 use Core\Session;
 
-$csrfToken = Csrf::getToken();
-$usuarioNombre = (string)Session::get('usuario_nombre', 'Usuario');
-$usuarioRol    = (string)Session::get('usuario_rol', 'contador');
-$empresaActivaId = (int)($empresaActiva['id'] ?? Session::getEmpresaActivaId());
-$empresaActivaRif = (string)($empresaActiva['rif'] ?? Session::get('empresa_activa_rif', 'N/A'));
-$empresaActivaTipo = (string)($empresaActiva['tipo_contribuyente'] ?? Session::get('empresa_activa_tipo', 'Ordinario'));
+$csrfToken            = Csrf::getToken();
+$usuarioNombre        = (string)Session::get('usuario_nombre', 'Usuario');
+$usuarioRol           = (string)Session::get('usuario_rol', 'contador');
+$empresaActivaId      = (int)($empresaActiva['id'] ?? Session::getEmpresaActivaId());
+$empresaActivaRif     = (string)($empresaActiva['rif'] ?? Session::get('empresa_activa_rif', 'N/A'));
+$empresaActivaTipo    = (string)($empresaActiva['tipo_contribuyente'] ?? Session::get('empresa_activa_tipo', 'Ordinario'));
 $empresaActivaPeriodo = (string)($empresaActiva['periodo_fiscal_activo'] ?? Session::get('empresa_activa_periodo', date('Y-m')));
-$empresaActivaRetIva = (string)($empresaActiva['porcentaje_retencion_iva'] ?? Session::get('empresa_activa_ret_iva', '75'));
+$empresaActivaRetIva  = (string)($empresaActiva['porcentaje_retencion_iva'] ?? Session::get('empresa_activa_ret_iva', '75'));
 ?>
 <!DOCTYPE html>
-<html lang="es" class="h-full dark">
+<html lang="es" class="h-full">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,32 +22,15 @@ $empresaActivaRetIva = (string)($empresaActiva['porcentaje_retencion_iva'] ?? Se
     <meta name="base-url" content="<?= e(BASE_URL) ?>">
     <title><?= e($tituloPagina ?? APP_NAME) ?></title>
 
-    <!-- Inicialización temprana de Tema (Evita parpadeo FOUC al cambiar de vista) -->
-    <script>
-        (function () {
-            try {
-                var savedTheme = localStorage.getItem('theme') || 'dark';
-                if (savedTheme === 'dark') {
-                    document.documentElement.classList.add('dark');
-                } else {
-                    document.documentElement.classList.remove('dark');
-                }
-            } catch (e) {
-                document.documentElement.classList.add('dark');
-            }
-        })();
-    </script>
-
     <!-- Tipografías: Inter (UI) y JetBrains Mono (Cifras contables y RIF) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Tailwind CSS CDN con darkMode: 'class' -->
+    <!-- Tailwind CSS CDN (Modo Claro Institucional Blanco y Verde) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
@@ -56,12 +39,11 @@ $empresaActivaRetIva = (string)($empresaActiva['porcentaje_retencion_iva'] ?? Se
                     },
                     colors: {
                         juris: {
-                            950: '#070b14',
-                            900: '#0f172a',
-                            800: '#1e293b',
-                            700: '#334155',
-                            accent: '#10b981',
-                            gold: '#f59e0b'
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b'
                         }
                     }
                 }
@@ -74,10 +56,9 @@ $empresaActivaRetIva = (string)($empresaActiva['porcentaje_retencion_iva'] ?? Se
 
     <style>
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        html.dark ::-webkit-scrollbar-track { background: #0f172a; }
-        html.dark ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-        html:not(.dark) ::-webkit-scrollbar-track { background: #f1f5f9; }
-        html:not(.dark) ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         .sidebar-collapsed { width: 4.5rem !important; }
         .sidebar-collapsed .sidebar-text,
@@ -85,69 +66,92 @@ $empresaActivaRetIva = (string)($empresaActiva['porcentaje_retencion_iva'] ?? Se
         .sidebar-collapsed .sidebar-badge { display: none !important; }
         .sidebar-collapsed .sidebar-item { justify-content: center; padding-left: 0.75rem; padding-right: 0.75rem; }
 
-        /* Adaptación automática de alto contraste para Modo Claro (html:not(.dark)) */
-        html:not(.dark) body { background-color: #f8fafc !important; color: #0f172a !important; }
-        html:not(.dark) main.bg-slate-950 { background-color: #f1f5f9 !important; color: #0f172a !important; }
-        html:not(.dark) #appSidebar { background-color: #ffffff !important; border-color: #e2e8f0 !important; }
-        html:not(.dark) header.bg-slate-900\/95 { background-color: rgba(255, 255, 255, 0.95) !important; border-color: #e2e8f0 !important; }
-        html:not(.dark) footer.bg-slate-900\/90 { background-color: #ffffff !important; border-color: #e2e8f0 !important; color: #475569 !important; }
-        html:not(.dark) .bg-slate-900,
-        html:not(.dark) .bg-slate-900\/90,
-        html:not(.dark) .bg-slate-900\/60 { background-color: #ffffff !important; }
-        html:not(.dark) .from-slate-900 {
+        /* Paleta Institucional Modo Claro (Blanco / Gris Suave / Verde Esmeralda #047857) */
+        body { background-color: #f8fafc !important; color: #0f172a !important; }
+        main { background-color: #f8fafc !important; color: #0f172a !important; }
+        #appSidebar { background-color: #ffffff !important; border-color: #e2e8f0 !important; }
+        header { background-color: #ffffff !important; border-color: #e2e8f0 !important; }
+        footer { background-color: #ffffff !important; border-color: #e2e8f0 !important; color: #475569 !important; }
+
+        .bg-slate-900,
+        .bg-slate-900\/95,
+        .bg-slate-900\/90,
+        .bg-slate-900\/60 { background-color: #ffffff !important; }
+
+        .from-slate-900 {
             --tw-gradient-from: #ffffff !important;
             --tw-gradient-to: #f8fafc !important;
             --tw-gradient-stops: var(--tw-gradient-from), #f8fafc, var(--tw-gradient-to) !important;
         }
-        html:not(.dark) .bg-slate-950,
-        html:not(.dark) .bg-slate-950\/90,
-        html:not(.dark) .bg-slate-950\/80,
-        html:not(.dark) .bg-slate-950\/70,
-        html:not(.dark) .bg-slate-950\/60,
-        html:not(.dark) .bg-slate-950\/50,
-        html:not(.dark) .bg-slate-950\/40 { background-color: #f8fafc !important; }
-        html:not(.dark) .fixed.bg-slate-950\/80 { background-color: rgba(15, 23, 42, 0.55) !important; }
-        html:not(.dark) .bg-slate-800 { background-color: #f1f5f9 !important; }
-        html:not(.dark) .hover\:bg-slate-800\/70:hover,
-        html:not(.dark) .hover\:bg-slate-800\/50:hover,
-        html:not(.dark) .hover\:bg-slate-800\/40:hover,
-        html:not(.dark) .hover\:bg-slate-800:hover,
-        html:not(.dark) .hover\:bg-slate-700:hover { background-color: #e2e8f0 !important; }
-        html:not(.dark) .border-slate-800,
-        html:not(.dark) .border-slate-800\/90,
-        html:not(.dark) .border-slate-800\/80,
-        html:not(.dark) .border-slate-700,
-        html:not(.dark) .border-slate-700\/80,
-        html:not(.dark) .border-slate-700\/90 { border-color: #cbd5e1 !important; }
-        html:not(.dark) .divide-slate-800 > :not([hidden]) ~ :not([hidden]),
-        html:not(.dark) .divide-slate-800\/80 > :not([hidden]) ~ :not([hidden]),
-        html:not(.dark) .divide-slate-800\/70 > :not([hidden]) ~ :not([hidden]),
-        html:not(.dark) .divide-slate-800\/60 > :not([hidden]) ~ :not([hidden]) { border-color: #e2e8f0 !important; }
-        html:not(.dark) .text-white,
-        html:not(.dark) .text-slate-100,
-        html:not(.dark) .text-slate-200 { color: #0f172a !important; }
-        html:not(.dark) .text-slate-300 { color: #334155 !important; }
-        html:not(.dark) .text-slate-400 { color: #475569 !important; }
-        html:not(.dark) .text-emerald-400,
-        html:not(.dark) .text-emerald-300 { color: #047857 !important; }
-        html:not(.dark) .text-teal-400,
-        html:not(.dark) .text-teal-300 { color: #0f766e !important; }
-        html:not(.dark) .text-amber-300,
-        html:not(.dark) .text-amber-400 { color: #b45309 !important; }
-        html:not(.dark) .text-sky-300,
-        html:not(.dark) .text-sky-400 { color: #0369a1 !important; }
-        html:not(.dark) .text-rose-300,
-        html:not(.dark) .text-rose-400 { color: #be123c !important; }
-        html:not(.dark) .text-indigo-300,
-        html:not(.dark) .text-indigo-400 { color: #4338ca !important; }
-        /* Conservar texto blanco en botones de acción con gradiente o fondo sólido */
-        html:not(.dark) .from-emerald-600,
-        html:not(.dark) .from-emerald-500,
-        html:not(.dark) .bg-emerald-600,
-        html:not(.dark) .bg-emerald-600 * { color: #ffffff !important; }
 
-        /* Estilos limpios para Impresión Oficial de Libros Legales y Estados Financieros */
+        .bg-slate-950,
+        .bg-slate-950\/90,
+        .bg-slate-950\/80,
+        .bg-slate-950\/70,
+        .bg-slate-950\/60,
+        .bg-slate-950\/50,
+        .bg-slate-950\/40,
+        .bg-slate-950\/30 { background-color: #f8fafc !important; }
+
+        .fixed.bg-slate-950\/80,
+        .fixed.bg-slate-950\/75 { background-color: rgba(15, 23, 42, 0.45) !important; }
+
+        .bg-slate-800,
+        .bg-slate-800\/90 { background-color: #f1f5f9 !important; }
+        .hover\:bg-slate-800\/70:hover,
+        .hover\:bg-slate-800\/60:hover,
+        .hover\:bg-slate-800\/50:hover,
+        .hover\:bg-slate-800\/40:hover,
+        .hover\:bg-slate-800:hover,
+        .hover\:bg-slate-700:hover { background-color: #ecfdf5 !important; }
+
+        .border-slate-800,
+        .border-slate-800\/90,
+        .border-slate-800\/80,
+        .border-slate-700,
+        .border-slate-700\/80,
+        .border-slate-700\/90 { border-color: #e2e8f0 !important; }
+
+        .divide-slate-800 > :not([hidden]) ~ :not([hidden]),
+        .divide-slate-800\/80 > :not([hidden]) ~ :not([hidden]),
+        .divide-slate-800\/70 > :not([hidden]) ~ :not([hidden]),
+        .divide-slate-800\/60 > :not([hidden]) ~ :not([hidden]) { border-color: #e2e8f0 !important; }
+
+        .text-white,
+        .text-slate-100,
+        .text-slate-200 { color: #0f172a !important; }
+        .text-slate-300 { color: #334155 !important; }
+        .text-slate-400 { color: #475569 !important; }
+        .text-emerald-400,
+        .text-emerald-300 { color: #047857 !important; }
+        .text-teal-400,
+        .text-teal-300 { color: #0f766e !important; }
+        .text-amber-300,
+        .text-amber-400 { color: #b45309 !important; }
+        .text-sky-300,
+        .text-sky-400 { color: #0369a1 !important; }
+        .text-rose-300,
+        .text-rose-400 { color: #be123c !important; }
+        .text-indigo-300,
+        .text-indigo-400 { color: #4338ca !important; }
+
+        /* Botones primarios y acentos en Verde Institucional (#047857 / #065f46) */
+        .from-emerald-600,
+        .from-emerald-500,
+        .bg-emerald-600,
+        .bg-emerald-700,
+        .bg-amber-600 { background-color: #047857 !important; color: #ffffff !important; }
+        .bg-emerald-600:hover,
+        .bg-emerald-700:hover { background-color: #065f46 !important; }
+        .from-emerald-600 *,
+        .from-emerald-500 *,
+        .bg-emerald-600 *,
+        .bg-emerald-700 *,
+        .bg-amber-600 * { color: #ffffff !important; }
+
+        /* Impresión Oficial Limpia */
         @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             body, html, main { background: #ffffff !important; color: #000000 !important; overflow: visible !important; height: auto !important; }
             #appSidebar, header, footer, .no-print { display: none !important; }
             .flex.h-screen.w-screen { display: block !important; height: auto !important; width: 100% !important; overflow: visible !important; }
@@ -160,6 +164,6 @@ $empresaActivaRetIva = (string)($empresaActiva['porcentaje_retencion_iva'] ?? Se
         }
     </style>
 </head>
-<body class="h-full font-sans text-slate-900 dark:text-slate-100 bg-slate-50 dark:bg-slate-950 antialiased selection:bg-emerald-500 selection:text-white overflow-hidden transition-colors duration-200">
+<body class="h-full font-sans text-slate-900 bg-slate-50 antialiased selection:bg-emerald-700 selection:text-white overflow-hidden">
 
 <div class="flex h-screen w-screen overflow-hidden">

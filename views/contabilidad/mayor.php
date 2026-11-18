@@ -7,6 +7,13 @@ $mayorList = $libroMayor ?? [];
 
 <div class="max-w-7xl mx-auto space-y-6">
 
+    <?php
+    $tituloReporte    = 'LIBRO MAYOR ANALÍTICO';
+    $subtituloPeriodo = 'Del ' . date('d/m/Y', strtotime((string)($fechaDesde ?? date('Y-m-01')))) . ' al ' . date('d/m/Y', strtotime((string)($fechaHasta ?? date('Y-m-d'))));
+    $claseContenedor  = 'hidden print:block mb-5';
+    require ROOT_PATH . '/views/layouts/membrete_reporte.php';
+    ?>
+
     <!-- ENCABEZADO DEL LIBRO MAYOR ANALÍTICO -->
     <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 no-print">
         <div>
@@ -265,4 +272,8 @@ $mayorList = $libroMayor ?? [];
         </div>
     <?php endif; ?>
 
+    <?php
+    $clasePie = 'hidden print:flex mt-6 pt-3 border-t border-slate-300';
+    require ROOT_PATH . '/views/layouts/pie_reporte.php';
+    ?>
 </div>

@@ -44,6 +44,21 @@ final class EmpresaModel
             if ((int)$stmt->fetchColumn() === 0) {
                 $this->db->exec('ALTER TABLE `configuracion_fiscal` ADD COLUMN `tasa_bcv_usd` DECIMAL(18,4) NOT NULL DEFAULT 45.0000 COMMENT "Tasa oficial BCV Bs./USD"');
             }
+
+            $stmtLogo = $this->db->prepare(
+                'SELECT COUNT(*)
+                 FROM information_schema.COLUMNS
+                 WHERE TABLE_SCHEMA = DATABASE()
+                   AND TABLE_NAME = :tabla
+                   AND COLUMN_NAME = :columna'
+            );
+            $stmtLogo->execute([
+                ':tabla'   => 'empresas',
+                ':columna' => 'logo_path',
+            ]);
+            if ((int)$stmtLogo->fetchColumn() === 0) {
+                $this->db->exec('ALTER TABLE `empresas` ADD COLUMN `logo_path` VARCHAR(255) NULL DEFAULT NULL AFTER `moneda_principal`');
+            }
             self::$columnaBcvVerificada = true;
         } catch (Throwable) {
             self::$columnaBcvVerificada = true;
@@ -95,7 +110,7 @@ final class EmpresaModel
     public function listarActivas(): array
     {
         $sql = 'SELECT id, rif, razon_social, nombre_comercial, tipo_contribuyente,
-                       porcentaje_retencion_iva, periodo_fiscal_activo, moneda_principal, activo
+                       porcentaje_retencion_iva, periodo_fiscal_activo, moneda_principal, logo_path, activo
                 FROM empresas
                 WHERE activo = 1
                 ORDER BY razon_social ASC';
@@ -163,12 +178,12 @@ final class EmpresaModel
                                 rif, razon_social, nombre_comercial, direccion_fiscal,
                                 telefono, email_contacto, representante_legal,
                                 tipo_contribuyente, porcentaje_retencion_iva,
-                                periodo_fiscal_activo, moneda_principal, activo
+                                periodo_fiscal_activo, moneda_principal, logo_path, activo
                            ) VALUES (
                                 :rif, :razon_social, :nombre_comercial, :direccion_fiscal,
                                 :telefono, :email_contacto, :representante_legal,
                                 :tipo_contribuyente, :porcentaje_retencion_iva,
-                                :periodo_fiscal_activo, :moneda_principal, 1
+                                :periodo_fiscal_activo, :moneda_principal, :logo_path, 1
                            )';
 
             $stmt = $this->db->prepare($sqlEmpresa);
@@ -184,6 +199,7 @@ final class EmpresaModel
                 ':porcentaje_retencion_iva' => (string)$datos['porcentaje_retencion_iva'],
                 ':periodo_fiscal_activo'    => $datos['periodo_fiscal_activo'],
                 ':moneda_principal'         => $datos['moneda_principal'] ?? 'VES',
+                ':logo_path'                => !empty($datos['logo_path']) ? (string)$datos['logo_path'] : null,
             ]);
 
             $empresaId = (int)$this->db->lastInsertId();
@@ -226,21 +242,8 @@ final class EmpresaModel
         Database::beginTransaction();
 
         try {
-            $sql = 'UPDATE empresas SET
-                        rif = :rif,
-                        razon_social = :razon_social,
-                        nombre_comercial = :nombre_comercial,
-                        direccion_fiscal = :direccion_fiscal,
-                        telefono = :telefono,
-                        email_contacto = :email_contacto,
-                        representante_legal = :representante_legal,
-                        tipo_contribuyente = :tipo_contribuyente,
-                        porcentaje_retencion_iva = :porcentaje_retencion_iva,
-                        periodo_fiscal_activo = :periodo_fiscal_activo
-                    WHERE id = :id';
-
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([
+            $setLogo = '';
+            $paramsUpd = [
                 ':rif'                      => strtoupper(trim($datos['rif'])),
                 ':razon_social'             => trim($datos['razon_social']),
                 ':nombre_comercial'         => trim($datos['nombre_comercial'] ?? '') ?: null,
@@ -252,7 +255,30 @@ final class EmpresaModel
                 ':porcentaje_retencion_iva' => (string)$datos['porcentaje_retencion_iva'],
                 ':periodo_fiscal_activo'    => $datos['periodo_fiscal_activo'],
                 ':id'                       => $id,
-            ]);
+            ];
+
+            if (!empty($datos['logo_path'])) {
+                $setLogo = ', logo_path = :logo_path';
+                $paramsUpd[':logo_path'] = (string)$datos['logo_path'];
+            } elseif (!empty($datos['eliminar_logo'])) {
+                $setLogo = ', logo_path = NULL';
+            }
+
+            $sql = 'UPDATE empresas SET
+                        rif = :rif,
+                        razon_social = :razon_social,
+                        nombre_comercial = :nombre_comercial,
+                        direccion_fiscal = :direccion_fiscal,
+                        telefono = :telefono,
+                        email_contacto = :email_contacto,
+                        representante_legal = :representante_legal,
+                        tipo_contribuyente = :tipo_contribuyente,
+                        porcentaje_retencion_iva = :porcentaje_retencion_iva,
+                        periodo_fiscal_activo = :periodo_fiscal_activo' . $setLogo . '
+                    WHERE id = :id';
+
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute($paramsUpd);
 
             // Actualizar o insertar configuración fiscal asociada
             $sqlUpsertConfig = 'INSERT INTO configuracion_fiscal (

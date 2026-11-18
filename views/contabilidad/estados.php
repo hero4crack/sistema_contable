@@ -114,31 +114,16 @@ $tab = $tabActiva ?? 'comprobacion';
     </div>
 
     <!-- MEMBRETE OFICIAL DE LA EMPRESA ACTIVA (VISIBLE EN PANTALLA Y EN IMPRESIÓN) -->
-    <div class="rounded-2xl bg-slate-900 border border-slate-800 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 print-container">
-        <div>
-            <div class="flex items-center gap-2.5">
-                <h2 class="text-base font-bold text-white uppercase"><?= e($emp['razon_social'] ?? '') ?></h2>
-                <span class="px-2 py-0.5 rounded text-xs font-mono font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                    RIF: <?= e($emp['rif'] ?? '') ?>
-                </span>
-            </div>
-            <p class="text-xs text-slate-400 mt-1"><?= e($emp['direccion_fiscal'] ?? '') ?></p>
-        </div>
-
-        <div class="text-left sm:text-right font-mono text-xs">
-            <span id="tituloMembreteReporte" class="font-bold text-emerald-400 uppercase block">
-                <?php if ($tab === 'resultados'): ?>
-                    ESTADO DE RESULTADOS (GANANCIAS Y PÉRDIDAS)
-                <?php elseif ($tab === 'general'): ?>
-                    BALANCE GENERAL (ESTADO DE SITUACIÓN FINANCIERA)
-                <?php else: ?>
-                    BALANCE DE COMPROBACIÓN DE SUMAS Y SALDOS
-                <?php endif; ?>
-            </span>
-            <span class="text-slate-400 block mt-0.5">
-                Período: <?= e($fechaDesde) ?> al <?= e($fechaHasta) ?> • Expresado en Bolívares (VES)
-            </span>
-        </div>
+    <div class="rounded-2xl bg-white border border-slate-200 shadow-sm p-5 print-container">
+        <?php
+        $tituloReporte = $tab === 'resultados'
+            ? 'ESTADO DE RESULTADOS (GANANCIAS Y PÉRDIDAS)'
+            : ($tab === 'general' ? 'BALANCE GENERAL (ESTADO DE SITUACIÓN FINANCIERA)' : 'BALANCE DE COMPROBACIÓN DE SUMAS Y SALDOS');
+        $subtituloPeriodo = 'Período: ' . (string)$fechaDesde . ' al ' . (string)$fechaHasta . ' • Expresado en Bolívares (VES)';
+        $tituloReporteId  = 'tituloMembreteReporte';
+        $claseContenedor  = 'mb-0';
+        require ROOT_PATH . '/views/layouts/membrete_reporte.php';
+        ?>
     </div>
 
     <!-- =======================================================================
@@ -518,4 +503,5 @@ $tab = $tabActiva ?? 'comprobacion';
         </div>
     </section>
 
+    <?php require ROOT_PATH . '/views/layouts/pie_reporte.php'; ?>
 </div>

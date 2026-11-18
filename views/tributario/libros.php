@@ -176,24 +176,16 @@ foreach ($ventas as $vRow) {
     </div>
 
     <!-- MEMBRETE OFICIAL DE LA EMPRESA ACTIVA -->
-    <div class="rounded-2xl bg-slate-900 border border-slate-800 p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 print-container">
-        <div>
-            <h2 class="text-base font-bold text-white uppercase">
-                NOMBRE DEL CONTRIBUYENTE: <?= e($emp['razon_social'] ?? '') ?>
-            </h2>
-            <p class="text-xs font-mono text-emerald-400 mt-0.5">
-                RIF: <?= e($emp['rif'] ?? '') ?> • Condición: Contribuyente <?= e($emp['tipo_contribuyente'] ?? '') ?> (Ret. IVA <?= e($emp['porcentaje_retencion_iva'] ?? '75') ?>%)
-            </p>
-            <p class="text-xs text-slate-400 mt-0.5"><?= e($emp['direccion_fiscal'] ?? '') ?></p>
-        </div>
-        <div class="text-left sm:text-right font-mono text-xs">
-            <span id="lblTituloLibroMembrete" class="font-bold text-emerald-400 uppercase block">
-                <?= $tab === 'ventas' ? 'LIBRO AUXILIAR DE VENTAS' : 'LIBRO AUXILIAR DE COMPRAS NACIONALES' ?>
-            </span>
-            <span class="text-slate-400 block mt-0.5">
-                PERÍODO FISCAL: <?= e($periodo) ?>
-            </span>
-        </div>
+    <div class="rounded-2xl bg-white border border-slate-200 shadow-sm p-5 print-container">
+        <?php
+        $tituloReporte = $tab === 'ventas'
+            ? 'LIBRO AUXILIAR DE VENTAS'
+            : ($tab === 'resumen72' ? 'RESUMEN FISCAL ARTÍCULO 72 (FORMA 30 SENIAT)' : 'LIBRO AUXILIAR DE COMPRAS NACIONALES');
+        $subtituloPeriodo = 'PERÍODO FISCAL: ' . (string)$periodo . ' • Ret. IVA: ' . (string)($emp['porcentaje_retencion_iva'] ?? '75') . '%';
+        $tituloReporteId  = 'lblTituloLibroMembrete';
+        $claseContenedor  = 'mb-0';
+        require ROOT_PATH . '/views/layouts/membrete_reporte.php';
+        ?>
     </div>
 
     <!-- =======================================================================
@@ -537,6 +529,7 @@ foreach ($ventas as $vRow) {
         </div>
     </section>
 
+    <?php require ROOT_PATH . '/views/layouts/pie_reporte.php'; ?>
 </div>
 
 <!-- ===========================================================================

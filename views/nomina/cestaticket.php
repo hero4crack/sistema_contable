@@ -265,6 +265,13 @@ $filasPreCest   = $precalculo['filas'] ?? [];
                 </div>
             </div>
 
+            <?php
+            $tituloReporte    = 'RELACIÓN DE BONO DE ALIMENTACIÓN — ' . (string)$loteSeleccionado['codigo_lote'];
+            $subtituloPeriodo = 'Período: ' . (string)$loteSeleccionado['periodo'];
+            $claseContenedor  = 'hidden print:block mb-4';
+            require ROOT_PATH . '/views/layouts/membrete_reporte.php';
+            ?>
+
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-xs">
                     <thead>
@@ -315,6 +322,10 @@ $filasPreCest   = $precalculo['filas'] ?? [];
                     </tfoot>
                 </table>
             </div>
+            <?php
+            $clasePie = 'hidden print:flex mt-6 pt-3 border-t border-slate-300';
+            require ROOT_PATH . '/views/layouts/pie_reporte.php';
+            ?>
         <?php endif; ?>
     </div>
 </div>
