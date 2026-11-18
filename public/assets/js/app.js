@@ -175,7 +175,10 @@
 
     async function abrirModalEditarEmpresa(id) {
         try {
-            const res = await requestJson(`${BASE_URL}/index.php?c=empresa&a=obtener&id=${encodeURIComponent(id)}`);
+            const res = await requestJson(`${BASE_URL}/index.php?c=empresa&a=obtener`, {
+                method: 'POST',
+                body: { id: Number(id) }
+            });
             const emp = res.empresa;
 
             document.getElementById('emp_id').value = emp.id;
@@ -263,7 +266,10 @@
         tbody.innerHTML = '<tr><td colspan="6" class="py-10 text-center text-slate-400 font-mono">Consultando Plan de Cuentas en Base de Datos...</td></tr>';
 
         try {
-            const res = await requestJson(`${BASE_URL}/index.php?c=empresa&a=verPlanCuentas&empresa_id=${encodeURIComponent(empresaId)}`);
+            const res = await requestJson(`${BASE_URL}/index.php?c=empresa&a=verPlanCuentas`, {
+                method: 'POST',
+                body: { empresa_id: Number(empresaId) }
+            });
             catalogoActualModal = res.cuentas || [];
 
             document.getElementById('planModalRif').textContent = res.empresa.rif;
@@ -401,7 +407,10 @@
 
     async function abrirModalSubcuenta(codigoPadre) {
         try {
-            const res = await requestJson(`${BASE_URL}/index.php?c=plan_cuentas&a=sugerirSubcodigo&codigo_padre=${encodeURIComponent(codigoPadre)}`);
+            const res = await requestJson(`${BASE_URL}/index.php?c=plan_cuentas&a=sugerirSubcodigo`, {
+                method: 'POST',
+                body: { codigo_padre: codigoPadre }
+            });
             abrirModalNuevaCuenta();
 
             document.getElementById('cta_codigo_padre').value = codigoPadre;
@@ -418,7 +427,10 @@
 
     async function abrirModalEditarCuenta(id) {
         try {
-            const res = await requestJson(`${BASE_URL}/index.php?c=plan_cuentas&a=obtener&id=${encodeURIComponent(id)}`);
+            const res = await requestJson(`${BASE_URL}/index.php?c=plan_cuentas&a=obtener`, {
+                method: 'POST',
+                body: { id: Number(id) }
+            });
             const c = res.cuenta;
 
             document.getElementById('cta_id').value = c.id;
@@ -683,7 +695,10 @@
         if (!modal) return;
 
         try {
-            const res = await requestJson(`${BASE_URL}/index.php?c=contabilidad&a=verAsiento&id=${encodeURIComponent(id)}`);
+            const res = await requestJson(`${BASE_URL}/index.php?c=contabilidad&a=verAsiento`, {
+                method: 'POST',
+                body: { id: Number(id) }
+            });
             const a = res.asiento;
 
             document.getElementById('modalAsiNumero').textContent = `Comprobante ${a.numero_asiento} (${a.estado})`;
@@ -1533,7 +1548,10 @@
 
             if (!tasaOficial) {
                 try {
-                    const resPhp = await requestJson(`${BASE_URL}/index.php?c=empresa&a=consultarBcvOnline`);
+                    const resPhp = await requestJson(`${BASE_URL}/index.php?c=empresa&a=consultarBcvOnline`, {
+                        method: 'POST',
+                        body: {}
+                    });
                     if (resPhp && Number(resPhp.tasa_bcv_usd) > 0) {
                         tasaOficial = Number(resPhp.tasa_bcv_usd);
                     }
@@ -1631,7 +1649,10 @@
 
             // 2. Fallback por el backend PHP si la consulta directa no respondió
             if (!tasaObtenida) {
-                const res = await requestJson(`${BASE_URL}/index.php?c=empresa&a=consultarBcvOnline`);
+                const res = await requestJson(`${BASE_URL}/index.php?c=empresa&a=consultarBcvOnline`, {
+                    method: 'POST',
+                    body: {}
+                });
                 if (res && Number(res.tasa_bcv_usd) > 0) {
                     tasaObtenida = Number(res.tasa_bcv_usd);
                 }
@@ -1703,7 +1724,10 @@
 
         if (id > 0) {
             try {
-                const res = await requestJson(`${BASE_URL}/index.php?c=nomina&a=obtenerTrabajador&id=${id}`);
+                const res = await requestJson(`${BASE_URL}/index.php?c=nomina&a=obtenerTrabajador`, {
+                    method: 'POST',
+                    body: { id: Number(id) }
+                });
                 const t = res.trabajador;
                 document.getElementById('trab_cedula').value = t.cedula || '';
                 document.getElementById('trab_nombres').value = t.nombres || '';

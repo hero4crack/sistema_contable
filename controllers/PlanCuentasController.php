@@ -51,14 +51,17 @@ final class PlanCuentasController extends Controller
     }
 
     /**
-     * Obtiene una cuenta por su ID dentro de la empresa activa (GET JSON)
+     * Obtiene una cuenta por su ID dentro de la empresa activa (POST JSON)
      */
     public function obtener(): void
     {
         $this->requireAuth();
+        $this->requirePost();
+        $this->validateCsrf();
 
         $empresaId = Session::getEmpresaActivaId();
-        $id = (int)($_GET['id'] ?? 0);
+        $input     = $this->getJsonInput();
+        $id        = (int)($input['id'] ?? 0);
 
         if ($id <= 0 || $empresaId <= 0) {
             $this->json(['ok' => false, 'message' => 'Parámetros de cuenta inválidos.'], 400);
@@ -78,14 +81,17 @@ final class PlanCuentasController extends Controller
     }
 
     /**
-     * Sugiere el próximo subcódigo disponible para crear una subcuenta bajo un código padre (GET JSON)
+     * Sugiere el próximo subcódigo disponible para crear una subcuenta bajo un código padre (POST JSON)
      */
     public function sugerirSubcodigo(): void
     {
         $this->requireAuth();
+        $this->requirePost();
+        $this->validateCsrf();
 
         $empresaId   = Session::getEmpresaActivaId();
-        $codigoPadre = trim((string)($_GET['codigo_padre'] ?? ''));
+        $input       = $this->getJsonInput();
+        $codigoPadre = trim((string)($input['codigo_padre'] ?? ''));
 
         if ($codigoPadre === '' || $empresaId <= 0) {
             $this->json(['ok' => false, 'message' => 'Código padre no especificado.'], 400);

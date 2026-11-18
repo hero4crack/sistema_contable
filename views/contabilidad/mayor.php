@@ -69,9 +69,8 @@ $mayorList = $libroMayor ?? [];
     </div>
 
     <!-- BARRA DE FILTROS: SELECTOR DE CUENTA Y RANGO DE FECHAS -->
-    <form method="GET" action="<?= e(BASE_URL . '/index.php') ?>" class="rounded-2xl bg-slate-900 border border-slate-800 p-4 flex flex-wrap items-end justify-between gap-4 no-print">
-        <input type="hidden" name="c" value="contabilidad">
-        <input type="hidden" name="a" value="mayor">
+    <form method="POST" action="<?= e(route_url('contabilidad', 'mayor')) ?>" class="rounded-2xl bg-slate-900 border border-slate-800 p-4 flex flex-wrap items-end justify-between gap-4 no-print">
+        <?= \Core\Csrf::field() ?>
 
         <div class="flex flex-wrap items-end gap-3 flex-1">
             <div class="flex-1 min-w-[280px]">

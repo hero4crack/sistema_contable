@@ -223,9 +223,8 @@ foreach (($asientos ?? []) as $aItem) {
     <?php endif; ?>
 
     <!-- BARRA DE FILTROS DEL LIBRO DIARIO -->
-    <form method="GET" action="<?= e(BASE_URL . '/index.php') ?>" class="rounded-2xl bg-slate-900 border border-slate-800 p-4 flex flex-wrap items-end justify-between gap-3 no-print">
-        <input type="hidden" name="c" value="contabilidad">
-        <input type="hidden" name="a" value="diario">
+    <form method="POST" action="<?= e(route_url('contabilidad', 'diario')) ?>" class="rounded-2xl bg-slate-900 border border-slate-800 p-4 flex flex-wrap items-end justify-between gap-3 no-print">
+        <?= \Core\Csrf::field() ?>
 
         <div class="flex flex-wrap items-end gap-3 flex-1">
             <div>

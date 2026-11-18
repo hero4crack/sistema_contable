@@ -40,10 +40,10 @@ final class ContabilidadController extends Controller
         $primerDiaPeriodo = $periodoActivo . '-01';
         $ultimoDiaPeriodo = date('Y-m-t', strtotime($primerDiaPeriodo));
 
-        $fechaDesde = isset($_GET['fecha_desde']) && $_GET['fecha_desde'] !== '' ? trim((string)$_GET['fecha_desde']) : '2026-01-01';
-        $fechaHasta = isset($_GET['fecha_hasta']) && $_GET['fecha_hasta'] !== '' ? trim((string)$_GET['fecha_hasta']) : $ultimoDiaPeriodo;
-        $busqueda   = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
-        $estado     = isset($_GET['estado']) ? trim((string)$_GET['estado']) : '';
+        $fechaDesde = isset($_REQUEST['fecha_desde']) && $_REQUEST['fecha_desde'] !== '' ? trim((string)$_REQUEST['fecha_desde']) : '2026-01-01';
+        $fechaHasta = isset($_REQUEST['fecha_hasta']) && $_REQUEST['fecha_hasta'] !== '' ? trim((string)$_REQUEST['fecha_hasta']) : $ultimoDiaPeriodo;
+        $busqueda   = isset($_REQUEST['q']) ? trim((string)$_REQUEST['q']) : '';
+        $estado     = isset($_REQUEST['estado']) ? trim((string)$_REQUEST['estado']) : '';
 
         $asientoModel = new AsientoModel();
         $asientos = $asientoModel->listarAsientos($empresaId, [
@@ -129,14 +129,17 @@ final class ContabilidadController extends Controller
     }
 
     /**
-     * Obtiene el detalle completo de un asiento contable en JSON para mostrar en modal
+     * Obtiene el detalle completo de un asiento contable en JSON para mostrar en modal (POST)
      */
     public function verAsiento(): void
     {
         $this->requireAuth();
+        $this->requirePost();
+        $this->validateCsrf();
 
         $empresaId = Session::getEmpresaActivaId();
-        $id = (int)($_GET['id'] ?? 0);
+        $input     = $this->getJsonInput();
+        $id        = (int)($input['id'] ?? 0);
 
         if ($id <= 0 || $empresaId <= 0) {
             $this->json(['ok' => false, 'message' => 'ID de asiento inválido.'], 400);
@@ -212,9 +215,9 @@ final class ContabilidadController extends Controller
         $primerDiaPeriodo = $periodoActivo . '-01';
         $ultimoDiaPeriodo = date('Y-m-t', strtotime($primerDiaPeriodo));
 
-        $fechaDesde = isset($_GET['fecha_desde']) && $_GET['fecha_desde'] !== '' ? trim((string)$_GET['fecha_desde']) : $primerDiaPeriodo;
-        $fechaHasta = isset($_GET['fecha_hasta']) && $_GET['fecha_hasta'] !== '' ? trim((string)$_GET['fecha_hasta']) : $ultimoDiaPeriodo;
-        $cuentaId   = isset($_GET['cuenta_id']) && (int)$_GET['cuenta_id'] > 0 ? (int)$_GET['cuenta_id'] : null;
+        $fechaDesde = isset($_REQUEST['fecha_desde']) && $_REQUEST['fecha_desde'] !== '' ? trim((string)$_REQUEST['fecha_desde']) : $primerDiaPeriodo;
+        $fechaHasta = isset($_REQUEST['fecha_hasta']) && $_REQUEST['fecha_hasta'] !== '' ? trim((string)$_REQUEST['fecha_hasta']) : $ultimoDiaPeriodo;
+        $cuentaId   = isset($_REQUEST['cuenta_id']) && (int)$_REQUEST['cuenta_id'] > 0 ? (int)$_REQUEST['cuenta_id'] : null;
 
         $planModel = new PlanCuentasModel();
         $cuentasImputables = $planModel->listarImputablesPorEmpresa($empresaId);
@@ -302,9 +305,9 @@ final class ContabilidadController extends Controller
         $primerDiaPeriodo = $periodoActivo . '-01';
         $ultimoDiaPeriodo = date('Y-m-t', strtotime($primerDiaPeriodo));
 
-        $fechaDesde = isset($_GET['fecha_desde']) && $_GET['fecha_desde'] !== '' ? trim((string)$_GET['fecha_desde']) : $primerDiaPeriodo;
-        $fechaHasta = isset($_GET['fecha_hasta']) && $_GET['fecha_hasta'] !== '' ? trim((string)$_GET['fecha_hasta']) : $ultimoDiaPeriodo;
-        $cuentaId   = isset($_GET['cuenta_id']) && (int)$_GET['cuenta_id'] > 0 ? (int)$_GET['cuenta_id'] : null;
+        $fechaDesde = isset($_REQUEST['fecha_desde']) && $_REQUEST['fecha_desde'] !== '' ? trim((string)$_REQUEST['fecha_desde']) : $primerDiaPeriodo;
+        $fechaHasta = isset($_REQUEST['fecha_hasta']) && $_REQUEST['fecha_hasta'] !== '' ? trim((string)$_REQUEST['fecha_hasta']) : $ultimoDiaPeriodo;
+        $cuentaId   = isset($_REQUEST['cuenta_id']) && (int)$_REQUEST['cuenta_id'] > 0 ? (int)$_REQUEST['cuenta_id'] : null;
         $formato    = isset($_GET['formato']) && $_GET['formato'] === 'tabla' ? 'tabla' : 'clasico';
         $agruparMes = isset($_GET['agrupar_mes']) && $_GET['agrupar_mes'] === '1';
         $folio      = isset($_GET['folio']) && (int)$_GET['folio'] > 0 ? (int)$_GET['folio'] : 1;
@@ -340,10 +343,10 @@ final class ContabilidadController extends Controller
         $primerDiaPeriodo = $periodoActivo . '-01';
         $ultimoDiaPeriodo = date('Y-m-t', strtotime($primerDiaPeriodo));
 
-        $fechaDesde = isset($_GET['fecha_desde']) && $_GET['fecha_desde'] !== '' ? trim((string)$_GET['fecha_desde']) : $primerDiaPeriodo;
-        $fechaHasta = isset($_GET['fecha_hasta']) && $_GET['fecha_hasta'] !== '' ? trim((string)$_GET['fecha_hasta']) : $ultimoDiaPeriodo;
-        $tabActiva  = isset($_GET['tab']) && in_array($_GET['tab'], ['comprobacion', 'resultados', 'general'], true)
-            ? (string)$_GET['tab']
+        $fechaDesde = isset($_REQUEST['fecha_desde']) && $_REQUEST['fecha_desde'] !== '' ? trim((string)$_REQUEST['fecha_desde']) : $primerDiaPeriodo;
+        $fechaHasta = isset($_REQUEST['fecha_hasta']) && $_REQUEST['fecha_hasta'] !== '' ? trim((string)$_REQUEST['fecha_hasta']) : $ultimoDiaPeriodo;
+        $tabActiva  = isset($_REQUEST['tab']) && in_array($_REQUEST['tab'], ['comprobacion', 'resultados', 'general'], true)
+            ? (string)$_REQUEST['tab']
             : 'comprobacion';
 
         $asientoModel = new AsientoModel();

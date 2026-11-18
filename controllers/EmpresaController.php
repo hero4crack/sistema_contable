@@ -21,8 +21,8 @@ final class EmpresaController extends Controller
     {
         $this->requireAuth();
 
-        $busqueda = isset($_GET['q']) ? trim((string)$_GET['q']) : null;
-        $estado   = isset($_GET['estado']) && $_GET['estado'] !== '' ? (string)$_GET['estado'] : null;
+        $busqueda = isset($_REQUEST['q']) ? trim((string)$_REQUEST['q']) : null;
+        $estado   = isset($_REQUEST['estado']) && $_REQUEST['estado'] !== '' ? (string)$_REQUEST['estado'] : null;
 
         $empresaModel = new EmpresaModel();
         $empresas = $empresaModel->listarTodas($busqueda, $estado);
@@ -38,13 +38,16 @@ final class EmpresaController extends Controller
     }
 
     /**
-     * Obtiene los datos detallados de una empresa en formato JSON para edición
+     * Obtiene los datos detallados de una empresa en formato JSON para edición (POST)
      */
     public function obtener(): void
     {
         $this->requireAuth();
+        $this->requirePost();
+        $this->validateCsrf();
 
-        $id = (int)($_GET['id'] ?? 0);
+        $input = $this->getJsonInput();
+        $id    = (int)($input['id'] ?? 0);
         if ($id <= 0) {
             $this->json(['ok' => false, 'message' => 'ID de empresa inválido.'], 400);
         }
@@ -294,15 +297,18 @@ final class EmpresaController extends Controller
     }
 
     /**
-     * Consulta en JSON el Plan de Cuentas clonado de una empresa específica
+     * Consulta en JSON el Plan de Cuentas clonado de una empresa específica (POST)
      */
     public function verPlanCuentas(): void
     {
         $this->requireAuth();
+        $this->requirePost();
+        $this->validateCsrf();
 
-        $empresaId = (int)($_GET['empresa_id'] ?? Session::getEmpresaActivaId());
-        $tipo      = isset($_GET['tipo']) ? trim((string)$_GET['tipo']) : null;
-        $busqueda  = isset($_GET['q']) ? trim((string)$_GET['q']) : null;
+        $input     = $this->getJsonInput();
+        $empresaId = (int)($input['empresa_id'] ?? Session::getEmpresaActivaId());
+        $tipo      = isset($input['tipo']) ? trim((string)$input['tipo']) : null;
+        $busqueda  = isset($input['q']) ? trim((string)$input['q']) : null;
 
         if ($empresaId <= 0) {
             $this->json(['ok' => false, 'message' => 'Empresa no especificada.'], 400);
@@ -386,11 +392,13 @@ final class EmpresaController extends Controller
     }
 
     /**
-     * Consulta en línea la Tasa Oficial del Dólar BCV desde API pública (con fallback seguro si no hay internet)
+     * Consulta en línea la Tasa Oficial del Dólar BCV desde API pública (POST + CSRF)
      */
     public function consultarBcvOnline(): void
     {
         $this->requireAuth();
+        $this->requirePost();
+        $this->validateCsrf();
 
         $tasaDetectada = null;
         $fechaVigencia = date('d/m/Y');

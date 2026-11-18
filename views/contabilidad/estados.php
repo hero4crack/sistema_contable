@@ -90,9 +90,8 @@ $tab = $tabActiva ?? 'comprobacion';
         </div>
 
         <!-- Formulario Rango de Fechas -->
-        <form method="GET" action="<?= e(BASE_URL . '/index.php') ?>" class="flex flex-wrap items-center gap-2.5">
-            <input type="hidden" name="c" value="contabilidad">
-            <input type="hidden" name="a" value="estados">
+        <form method="POST" action="<?= e(route_url('contabilidad', 'estados')) ?>" class="flex flex-wrap items-center gap-2.5">
+            <?= \Core\Csrf::field() ?>
             <input type="hidden" id="inputTabActivaEstados" name="tab" value="<?= e($tab) ?>">
 
             <div class="flex items-center gap-1.5">

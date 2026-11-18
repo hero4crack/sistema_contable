@@ -73,8 +73,8 @@ final class NominaController extends Controller
             $this->redirect('empresa', 'index');
         }
 
-        $filtroEstatus = isset($_GET['estatus']) ? strtoupper(trim((string)$_GET['estatus'])) : 'TODOS';
-        $busqueda      = isset($_GET['q']) ? trim((string)$_GET['q']) : '';
+        $filtroEstatus = isset($_REQUEST['estatus']) ? strtoupper(trim((string)$_REQUEST['estatus'])) : 'TODOS';
+        $busqueda      = isset($_REQUEST['q']) ? trim((string)$_REQUEST['q']) : '';
 
         $nominaModel  = new NominaModel();
         $config       = $nominaModel->obtenerConfiguracionLaboral($empresaId);
@@ -149,12 +149,12 @@ final class NominaController extends Controller
         $lotesNomina      = $nominaModel->listarNominas($empresaId);
         $lotesCestaticket = $nominaModel->listarLotesCestaticket($empresaId);
 
-        $nominaId = isset($_GET['nomina_id']) ? (int)$_GET['nomina_id'] : (int)($lotesNomina[0]['id'] ?? 0);
+        $nominaId = isset($_REQUEST['nomina_id']) ? (int)$_REQUEST['nomina_id'] : (int)($lotesNomina[0]['id'] ?? 0);
         $nominaSeleccionada = $nominaId > 0
             ? $nominaModel->obtenerNominaConDetalles($empresaId, $nominaId)
             : null;
 
-        $cestaticketId = isset($_GET['cestaticket_id']) ? (int)$_GET['cestaticket_id'] : (int)($lotesCestaticket[0]['id'] ?? 0);
+        $cestaticketId = isset($_REQUEST['cestaticket_id']) ? (int)$_REQUEST['cestaticket_id'] : (int)($lotesCestaticket[0]['id'] ?? 0);
         $cestaticketSeleccionado = $cestaticketId > 0
             ? $nominaModel->obtenerLoteCestaticket($empresaId, $cestaticketId)
             : null;
@@ -309,14 +309,17 @@ final class NominaController extends Controller
     }
 
     /**
-     * Obtiene los datos de un trabajador por su ID dentro de la empresa activa (GET JSON)
+     * Obtiene los datos de un trabajador por su ID dentro de la empresa activa (POST JSON)
      */
     public function obtenerTrabajador(): void
     {
         $this->requireAuth();
+        $this->requirePost();
+        $this->validateCsrf();
 
         $empresaId    = Session::getEmpresaActivaId();
-        $trabajadorId = isset($_GET['id']) ? (int)$_GET['id'] : 0;
+        $input        = $this->getJsonInput();
+        $trabajadorId = (int)($input['id'] ?? 0);
 
         $nominaModel = new NominaModel();
         $trabajador  = $nominaModel->obtenerTrabajador($empresaId, $trabajadorId);

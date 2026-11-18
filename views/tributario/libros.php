@@ -161,9 +161,8 @@ foreach ($ventas as $vRow) {
             </button>
         </div>
 
-        <form method="GET" action="<?= e(BASE_URL . '/index.php') ?>" class="flex items-center gap-2.5">
-            <input type="hidden" name="c" value="tributario">
-            <input type="hidden" name="a" value="libros">
+        <form method="POST" action="<?= e(route_url('tributario', 'libros')) ?>" class="flex items-center gap-2.5">
+            <?= \Core\Csrf::field() ?>
             <input type="hidden" id="inputTabActivaLibros" name="tab" value="<?= e($tab) ?>">
 
             <label class="text-xs font-medium text-slate-400">Período Fiscal:</label>

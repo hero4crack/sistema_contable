@@ -107,9 +107,8 @@ foreach ($trabajadores as $t) {
 </div>
 
 <!-- Barra de Filtros -->
-<form method="GET" action="<?= e(BASE_URL) ?>/index.php" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
-    <input type="hidden" name="c" value="nomina">
-    <input type="hidden" name="a" value="trabajadores">
+<form method="POST" action="<?= e(route_url('nomina', 'trabajadores')) ?>" class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+    <?= \Core\Csrf::field() ?>
 
     <div class="flex flex-wrap items-center gap-2">
         <?php

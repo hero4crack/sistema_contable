@@ -38,9 +38,8 @@ $puedeEditar     = in_array($usuarioRol, ['admin', 'contador'], true);
     </div>
 
     <!-- BARRA DE BÚSQUEDA Y FILTROS -->
-    <form method="GET" action="<?= e(BASE_URL . '/index.php') ?>" class="rounded-2xl bg-slate-900 border border-slate-800 p-4 flex flex-wrap items-center justify-between gap-3">
-        <input type="hidden" name="c" value="empresa">
-        <input type="hidden" name="a" value="index">
+    <form method="POST" action="<?= e(route_url('empresa', 'index')) ?>" class="rounded-2xl bg-slate-900 border border-slate-800 p-4 flex flex-wrap items-center justify-between gap-3">
+        <?= \Core\Csrf::field() ?>
 
         <div class="flex flex-wrap items-center gap-3 flex-1 min-w-[260px]">
             <div class="relative flex-1 min-w-[220px]">

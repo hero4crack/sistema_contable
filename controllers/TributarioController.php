@@ -37,12 +37,12 @@ final class TributarioController extends Controller
             $this->redirect('empresa', 'index');
         }
 
-        $periodo = isset($_GET['periodo']) && preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', (string)$_GET['periodo'])
-            ? (string)$_GET['periodo']
+        $periodo = isset($_REQUEST['periodo']) && preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', (string)$_REQUEST['periodo'])
+            ? (string)$_REQUEST['periodo']
             : (string)$empresaActiva['periodo_fiscal_activo'];
 
-        $tabActiva = isset($_GET['tab']) && in_array($_GET['tab'], ['compras', 'ventas', 'resumen72'], true)
-            ? (string)$_GET['tab']
+        $tabActiva = isset($_REQUEST['tab']) && in_array($_REQUEST['tab'], ['compras', 'ventas', 'resumen72'], true)
+            ? (string)$_REQUEST['tab']
             : 'compras';
 
         $tributarioModel = new TributarioModel();
@@ -200,12 +200,12 @@ final class TributarioController extends Controller
             $this->redirect('empresa', 'index');
         }
 
-        $periodo = isset($_GET['periodo']) && preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', (string)$_GET['periodo'])
-            ? (string)$_GET['periodo']
+        $periodo = isset($_REQUEST['periodo']) && preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', (string)$_REQUEST['periodo'])
+            ? (string)$_REQUEST['periodo']
             : (string)$empresaActiva['periodo_fiscal_activo'];
 
-        $tabActiva = isset($_GET['tab']) && in_array($_GET['tab'], ['iva', 'islr'], true)
-            ? (string)$_GET['tab']
+        $tabActiva = isset($_REQUEST['tab']) && in_array($_REQUEST['tab'], ['iva', 'islr'], true)
+            ? (string)$_REQUEST['tab']
             : 'iva';
 
         $tributarioModel = new TributarioModel();

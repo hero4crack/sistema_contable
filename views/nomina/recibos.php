@@ -55,9 +55,8 @@ declare(strict_types=1);
             <?php endif; ?>
         </div>
 
-        <form method="GET" action="<?= e(BASE_URL) ?>/index.php" class="mb-4">
-            <input type="hidden" name="c" value="nomina">
-            <input type="hidden" name="a" value="recibos">
+        <form method="POST" action="<?= e(route_url('nomina', 'recibos')) ?>" class="mb-4">
+            <?= \Core\Csrf::field() ?>
             <?php if (!empty($cestaticketSeleccionado['id'])): ?>
                 <input type="hidden" name="cestaticket_id" value="<?= (int)$cestaticketSeleccionado['id'] ?>">
             <?php endif; ?>
@@ -141,9 +140,8 @@ declare(strict_types=1);
             <?php endif; ?>
         </div>
 
-        <form method="GET" action="<?= e(BASE_URL) ?>/index.php" class="mb-4">
-            <input type="hidden" name="c" value="nomina">
-            <input type="hidden" name="a" value="recibos">
+        <form method="POST" action="<?= e(route_url('nomina', 'recibos')) ?>" class="mb-4">
+            <?= \Core\Csrf::field() ?>
             <?php if (!empty($nominaSeleccionada['id'])): ?>
                 <input type="hidden" name="nomina_id" value="<?= (int)$nominaSeleccionada['id'] ?>">
             <?php endif; ?>
