@@ -492,8 +492,9 @@ $puedeEditar = in_array($usuarioRol, ['admin', 'contador'], true);
 
 <script>
 (() => {
-    const BASE_URL = window.JURIS_CONFIG?.baseUrl || '';
-    const CSRF     = window.JURIS_CONFIG?.csrfToken || '';
+    const getMeta  = (name) => document.querySelector(`meta[name="${name}"]`)?.getAttribute('content') || '';
+    const BASE_URL = getMeta('base-url');
+    const CSRF     = getMeta('csrf-token');
     let filasCsvCache = [];
 
     window.cerrarModal = (id) => {

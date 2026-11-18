@@ -63,6 +63,8 @@ $controllerMap = [
     'manual'       => \Controllers\ManualController::class,
     'usuarios'     => \Controllers\UsuarioController::class,
     'usuario'      => \Controllers\UsuarioController::class,
+    'respaldo'     => \Controllers\RespaldoController::class,
+    'respaldos'    => \Controllers\RespaldoController::class,
 ];
 
 if (!isset($controllerMap[$controllerParam])) {

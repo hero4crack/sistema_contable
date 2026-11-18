@@ -329,8 +329,9 @@ $estatusConc    = (string)($conciliacionActual['estatus'] ?? 'Borrador');
 <?php if ($cuentaSeleccionada): ?>
 <script>
 (() => {
-    const BASE_URL  = window.JURIS_CONFIG?.baseUrl || '';
-    const CSRF      = window.JURIS_CONFIG?.csrfToken || '';
+    const getMeta   = (name) => document.querySelector(`meta[name="${name}"]`)?.getAttribute('content') || '';
+    const BASE_URL  = getMeta('base-url');
+    const CSRF      = getMeta('csrf-token');
     const CUENTA_ID = <?= (int)$cuentaSeleccionada['id'] ?>;
     const PERIODO   = <?= json_encode($periodo) ?>;
     const SIMBOLO   = <?= json_encode($simboloMoneda) ?>;

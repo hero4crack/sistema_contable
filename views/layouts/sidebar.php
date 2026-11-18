@@ -267,6 +267,18 @@ if ($inicialesEmpresa === '') {
                                     <span class="sidebar-badge text-[10px] font-mono px-1.5 py-0.5 rounded <?= $moduloActual === 'usuarios' ? 'bg-emerald-800 text-emerald-100' : 'bg-amber-50 text-amber-700 border border-amber-200' ?>">Admin</span>
                                 </a>
                             </li>
+                            <li>
+                                <a href="<?= e(route_url('respaldo', 'index')) ?>"
+                                   class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'respaldo' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
+                                    <div class="flex items-center gap-3">
+                                        <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'respaldo' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+                                        </svg>
+                                        <span class="sidebar-text">Respaldo Base de Datos</span>
+                                    </div>
+                                    <span class="sidebar-badge text-[10px] font-mono px-1.5 py-0.5 rounded <?= $moduloActual === 'respaldo' ? 'bg-emerald-800 text-emerald-100' : 'bg-amber-50 text-amber-700 border border-amber-200' ?>">Admin</span>
+                                </a>
+                            </li>
                         <?php endif; ?>
                         <li>
                             <a href="<?= e(route_url('manual', 'index')) ?>"
