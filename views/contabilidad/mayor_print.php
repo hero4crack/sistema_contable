@@ -217,9 +217,9 @@ $folioStr   = str_pad((string)($folio ?? 1), 4, '0', STR_PAD_LEFT);
                                     </tr>
                                     <tr class="font-bold">
                                         <td colspan="2" class="py-1 font-sans">TOTALES . . . . . . .</td>
-                                        <td class="py-1 text-right doble-subrayado"><?= number_format((float)$bloque['total_debe'], 2, ',', '.') ?></td>
-                                        <td class="py-1 text-right doble-subrayado"><?= number_format((float)$bloque['total_haber'], 2, ',', '.') ?></td>
-                                        <td class="py-1 text-right doble-subrayado"><?= number_format((float)$bloque['saldo_final'], 2, ',', '.') ?></td>
+                                        <td class="py-1 text-right doble-subrayado"><?= number_format((float)($bloque['total_debe_periodo'] ?? 0), 2, ',', '.') ?></td>
+                                        <td class="py-1 text-right doble-subrayado"><?= number_format((float)($bloque['total_haber_periodo'] ?? 0), 2, ',', '.') ?></td>
+                                        <td class="py-1 text-right doble-subrayado"><?= number_format((float)($bloque['saldo_final'] ?? 0), 2, ',', '.') ?></td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -284,9 +284,9 @@ $folioStr   = str_pad((string)($folio ?? 1), 4, '0', STR_PAD_LEFT);
                         <?php $cta = $bloque['cuenta']; ?>
                         <tr class="bg-slate-100 font-bold">
                             <td class="font-mono"><?= e((string)$cta['codigo']) ?> — <span class="font-sans uppercase"><?= e((string)$cta['nombre']) ?></span></td>
-                            <td class="text-right font-mono"><?= number_format((float)$bloque['total_debe'], 2, ',', '.') ?></td>
-                            <td class="text-right font-mono"><?= number_format((float)$bloque['total_haber'], 2, ',', '.') ?></td>
-                            <td class="text-right font-mono"><?= number_format((float)$bloque['saldo_final'], 2, ',', '.') ?></td>
+                            <td class="text-right font-mono"><?= number_format((float)($bloque['total_debe_periodo'] ?? 0), 2, ',', '.') ?></td>
+                            <td class="text-right font-mono"><?= number_format((float)($bloque['total_haber_periodo'] ?? 0), 2, ',', '.') ?></td>
+                            <td class="text-right font-mono"><?= number_format((float)($bloque['saldo_final'] ?? 0), 2, ',', '.') ?></td>
                         </tr>
                         <?php foreach ($bloque['movimientos'] as $m): ?>
                             <tr>

@@ -58,6 +58,7 @@ $controllerMap = [
     'contabilidad' => \Controllers\ContabilidadController::class,
     'tributario'   => \Controllers\TributarioController::class,
     'nomina'       => \Controllers\NominaController::class,
+    'manual'       => \Controllers\ManualController::class,
 ];
 
 if (!isset($controllerMap[$controllerParam])) {

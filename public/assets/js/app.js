@@ -1498,7 +1498,88 @@
                 }
             });
         }
+
+        // Sincronización automática en segundo plano del Dólar BCV al cargar cualquier pantalla
+        autoSincronizarTasaBcvSilencioso();
     });
+
+    /**
+     * Consulta automáticamente en segundo plano la Tasa Oficial del Dólar BCV al abrir el sistema,
+     * actualiza el indicador superior en vivo y guarda la tasa en la base de datos si cambió.
+     */
+    async function autoSincronizarTasaBcvSilencioso() {
+        const lblHeader = document.getElementById('lblTasaBcvHeader');
+        const inpModal = document.getElementById('inputTasaBcvGlobal');
+        if (!lblHeader || !inpModal) return;
+
+        try {
+            let tasaOficial = null;
+
+            // 1. Consulta silenciosa a API pública BCV desde el navegador
+            try {
+                const resp = await fetch('https://ve.dolarapi.com/v1/dolares/oficial', {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (resp.ok) {
+                    const json = await resp.json();
+                    if (json && Number(json.promedio) > 0) {
+                        tasaOficial = Number(json.promedio);
+                    }
+                }
+            } catch (_) {
+                // Fallback silencioso
+            }
+
+            if (!tasaOficial) {
+                try {
+                    const resPhp = await requestJson(`${BASE_URL}/index.php?c=empresa&a=consultarBcvOnline`);
+                    if (resPhp && Number(resPhp.tasa_bcv_usd) > 0) {
+                        tasaOficial = Number(resPhp.tasa_bcv_usd);
+                    }
+                } catch (_) {
+                    return;
+                }
+            }
+
+            if (!tasaOficial || tasaOficial <= 0) return;
+
+            const tasaActualGuardada = parseFloat(inpModal.value || '0') || 0;
+
+            // Actualizar visualmente la barra superior y el modal de inmediato
+            lblHeader.textContent = formatVes(tasaOficial, false);
+            inpModal.value = tasaOficial.toFixed(4);
+            previsualizarCestaticketBcv();
+
+            // Si la tasa en la base de datos es distinta a la tasa oficial vigente del BCV,
+            // persistirla automáticamente en segundo plano (junto con el Cestaticket $40 x BCV)
+            if (Math.abs(tasaActualGuardada - tasaOficial) > 0.005) {
+                await requestJson(`${BASE_URL}/index.php?c=empresa&a=actualizarTasaBcv`, {
+                    method: 'POST',
+                    body: {
+                        tasa_bcv_usd: tasaOficial,
+                        monto_usd_cestaticket: 40,
+                        recalcular_cestaticket: 1
+                    }
+                });
+
+                // Si el usuario está en la pantalla de Cestaticket, actualizar también la tabla en vivo
+                const inpCest = document.getElementById('cest_monto_mensual');
+                if (inpCest) {
+                    inpCest.value = (Math.round(tasaOficial * 40 * 100) / 100).toFixed(2);
+                    recalcularTodasLasFilasCestaticket();
+                }
+
+                // Si está en el modal de parámetros laborales, actualizar el input de Cestaticket
+                const inpCfgCest = document.getElementById('cfg_monto_cestaticket');
+                if (inpCfgCest) {
+                    inpCfgCest.value = (Math.round(tasaOficial * 40 * 100) / 100).toFixed(2);
+                }
+            }
+        } catch (_) {
+            // Fallo de red silencioso: mantiene la última tasa guardada en base de datos
+        }
+    }
 
     function abrirModalTasaBcv() {
         const modal = document.getElementById('modalTasaBcvGlobal');
@@ -1588,7 +1669,8 @@
     }
 
     function aplicarCestaticketPorTasaBcv(tasaBcv) {
-        const tasa = parseFloat(tasaBcv || '45') || 45;
+        const tasaLive = parseFloat(document.getElementById('inputTasaBcvGlobal')?.value || '0') || 0;
+        const tasa = tasaLive > 0 ? tasaLive : (parseFloat(tasaBcv || '45') || 45);
         const inp = document.getElementById('cest_monto_mensual');
         if (inp) {
             inp.value = (Math.round(tasa * 40 * 100) / 100).toFixed(2);
@@ -1598,7 +1680,8 @@
 
     function calcularSalarioBsDesdeUsd(montoUsd, tasaBcv) {
         const usd = parseFloat(montoUsd || '0') || 0;
-        const tasa = parseFloat(tasaBcv || '45') || 45;
+        const tasaLive = parseFloat(document.getElementById('inputTasaBcvGlobal')?.value || '0') || 0;
+        const tasa = tasaLive > 0 ? tasaLive : (parseFloat(tasaBcv || '45') || 45);
         const inpBs = document.getElementById('trab_salario_mensual');
         if (inpBs && usd > 0) {
             inpBs.value = (Math.round(usd * tasa * 100) / 100).toFixed(2);

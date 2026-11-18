@@ -305,23 +305,19 @@ final class EmpresaModel
             $stmt = $this->db->prepare(
                 'UPDATE configuracion_fiscal
                  SET tasa_bcv_usd = :tasa,
-                     monto_cestaticket_mensual = :cestaticket
-                 WHERE empresa_id = :empresa_id'
+                     monto_cestaticket_mensual = :cestaticket'
             );
             $stmt->execute([
                 ':tasa'        => $tasaBcv,
                 ':cestaticket' => $nuevoCestaticketBs,
-                ':empresa_id'  => $empresaId,
             ]);
         } else {
             $stmt = $this->db->prepare(
                 'UPDATE configuracion_fiscal
-                 SET tasa_bcv_usd = :tasa
-                 WHERE empresa_id = :empresa_id'
+                 SET tasa_bcv_usd = :tasa'
             );
             $stmt->execute([
-                ':tasa'       => $tasaBcv,
-                ':empresa_id' => $empresaId,
+                ':tasa' => $tasaBcv,
             ]);
         }
 

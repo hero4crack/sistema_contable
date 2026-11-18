@@ -187,49 +187,55 @@ final class NominaModel
     }
 
     /**
-     * Si la empresa 1 aún no tiene lotes de nómina ni cestaticket, crea un lote de muestra
+     * Si la empresa 1 o 2 aún no tienen lotes completos de nómina o cestaticket, crea un lote de muestra
      * procesado para Noviembre 2026 para que las vistas e impresiones tengan datos reales de inmediato.
      */
     private function sembrarDatosInicialesSiVacio(): void
     {
-        $stmtCount = $this->db->query('SELECT COUNT(*) FROM nominas WHERE empresa_id = 1');
-        if ((int)$stmtCount->fetchColumn() === 0) {
-            $precalculo = $this->precalcularLoteNomina(1, [
-                'periodo'         => '2026-11',
-                'tipo_frecuencia' => 'PRIMERA_QUINCENA',
-                'fecha_desde'     => '2026-11-01',
-                'fecha_hasta'     => '2026-11-15',
-                'lunes_del_mes'   => 5,
-            ]);
+        // Limpiar cualquier cabecera de nómina huérfana sin detalles
+        $this->db->exec('DELETE FROM nominas WHERE id NOT IN (SELECT DISTINCT nomina_id FROM nomina_detalles)');
 
-            if (!empty($precalculo['filas'])) {
-                // Agregar bono de producción de ejemplo al primer trabajador
-                $precalculo['filas'][0]['bonificaciones'] = 1200.00;
-                $this->procesarYGuardarNomina(1, 1, [
-                    'periodo'                 => '2026-11',
-                    'tipo_frecuencia'         => 'PRIMERA_QUINCENA',
-                    'fecha_desde'             => '2026-11-01',
-                    'fecha_hasta'             => '2026-11-15',
-                    'lunes_del_mes'           => 5,
-                    'descripcion'             => 'Nómina Primera Quincena Noviembre 2026 - Personal Administrativo y Operativo',
-                    'generar_asiento'         => true,
-                    'filas'                   => $precalculo['filas'],
+        foreach ([1, 2] as $empSeedId) {
+            $stmtCount = $this->db->prepare('SELECT COUNT(*) FROM nomina_detalles WHERE empresa_id = :emp_id');
+            $stmtCount->execute([':emp_id' => $empSeedId]);
+            if ((int)$stmtCount->fetchColumn() === 0) {
+                $precalculo = $this->precalcularLoteNomina($empSeedId, [
+                    'periodo'         => '2026-11',
+                    'tipo_frecuencia' => 'PRIMERA_QUINCENA',
+                    'fecha_desde'     => '2026-11-01',
+                    'fecha_hasta'     => '2026-11-15',
+                    'lunes_del_mes'   => 5,
                 ]);
+
+                if (!empty($precalculo['filas'])) {
+                    $precalculo['filas'][0]['bonificaciones'] = 1200.00;
+                    $this->procesarYGuardarNomina($empSeedId, 1, [
+                        'periodo'         => '2026-11',
+                        'tipo_frecuencia' => 'PRIMERA_QUINCENA',
+                        'fecha_desde'     => '2026-11-01',
+                        'fecha_hasta'     => '2026-11-15',
+                        'lunes_del_mes'   => 5,
+                        'descripcion'     => 'Nómina Primera Quincena Noviembre 2026 - Personal Activo',
+                        'generar_asiento' => true,
+                        'filas'           => $precalculo['filas'],
+                    ]);
+                }
             }
-        }
 
-        $stmtCest = $this->db->query('SELECT COUNT(*) FROM cestaticket_lotes WHERE empresa_id = 1');
-        if ((int)$stmtCest->fetchColumn() === 0) {
-            $preCest = $this->precalcularCestaticket(1, '2026-11');
-            if (!empty($preCest['filas'])) {
-                $this->guardarLoteCestaticket(1, 1, [
-                    'periodo'            => '2026-11',
-                    'fecha_emision'      => '2026-11-15',
-                    'monto_mensual_base' => (float)$preCest['monto_mensual_base'],
-                    'observaciones'      => 'Beneficio de Alimentación (Cestaticket Socialista) Mes de Noviembre 2026',
-                    'generar_asiento'    => false,
-                    'filas'              => $preCest['filas'],
-                ]);
+            $stmtCest = $this->db->prepare('SELECT COUNT(*) FROM cestaticket_detalles WHERE empresa_id = :emp_id');
+            $stmtCest->execute([':emp_id' => $empSeedId]);
+            if ((int)$stmtCest->fetchColumn() === 0) {
+                $preCest = $this->precalcularCestaticket($empSeedId, '2026-11');
+                if (!empty($preCest['filas'])) {
+                    $this->guardarLoteCestaticket($empSeedId, 1, [
+                        'periodo'            => '2026-11',
+                        'fecha_emision'      => '2026-11-15',
+                        'monto_mensual_base' => (float)$preCest['monto_mensual_base'],
+                        'observaciones'      => 'Beneficio de Alimentación (Cestaticket Socialista) Noviembre 2026',
+                        'generar_asiento'    => false,
+                        'filas'              => $preCest['filas'],
+                    ]);
+                }
             }
         }
     }
@@ -784,9 +790,8 @@ final class NominaModel
     {
         $config         = $this->obtenerConfiguracionLaboral($empresaId);
         $tipoFrecuencia = strtoupper(trim((string)($parametros['tipo_frecuencia'] ?? 'PRIMERA_QUINCENA')));
-        $lunesDelMes    = in_array((int)($parametros['lunes_del_mes'] ?? 4), [4, 5], true)
-            ? (int)$parametros['lunes_del_mes']
-            : 4;
+        $lunesInput     = (int)($parametros['lunes_del_mes'] ?? 4);
+        $lunesDelMes    = in_array($lunesInput, [4, 5], true) ? $lunesInput : 4;
 
         $diasBase = max(1, (int)$config['dias_base_calculo']);
 
@@ -958,9 +963,8 @@ final class NominaModel
         $tipoFrecuencia = strtoupper(trim((string)($payload['tipo_frecuencia'] ?? 'PRIMERA_QUINCENA')));
         $fechaDesde     = trim((string)($payload['fecha_desde'] ?? date('Y-m-01')));
         $fechaHasta     = trim((string)($payload['fecha_hasta'] ?? date('Y-m-15')));
-        $lunesDelMes    = in_array((int)($payload['lunes_del_mes'] ?? 4), [4, 5], true)
-            ? (int)$payload['lunes_del_mes']
-            : 4;
+        $lunesInput     = (int)($payload['lunes_del_mes'] ?? 4);
+        $lunesDelMes    = in_array($lunesInput, [4, 5], true) ? $lunesInput : 4;
         $descripcion    = trim((string)($payload['descripcion'] ?? 'Nómina Regular ' . $periodo));
         $generarAsiento = !empty($payload['generar_asiento']);
         $filas          = is_array($payload['filas'] ?? null) ? $payload['filas'] : [];
