@@ -95,9 +95,7 @@ sistema_contable/
 │       └── js/
 │           └── app.js            # Lógica global: cambio de empresa activa, modales, Fetch wrapper con CSRF
 └── database/
-    ├── juris_contable.sql        # Esquema completo de los 4 módulos + Seed inicial + Plan de Cuentas base
-    ├── fase3_tributario.sql      # Migración incremental Fase 3 (Libros SENIAT y Retenciones)
-    └── fase4_nomina_lottt.sql    # Migración incremental Fase 4 (Nómina LOTTT, Prestaciones y Cestaticket)
+    └── juris_contable.sql        # Esquema maestro único de todos los módulos + Seed inicial + Plan de Cuentas base
 ```
 
 ---
