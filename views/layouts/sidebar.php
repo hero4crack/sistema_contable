@@ -277,20 +277,20 @@ $empresaActivaTasaBcv = (float)($empresaActiva['tasa_bcv_usd'] ?? Session::get('
     <!-- CONTENEDOR DERECHO: TOPBAR MULTI-TENANT + CONTENIDO -->
     <div class="flex-1 flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-slate-950">
         <!-- HEADER SUPERIOR CON SELECTOR DINÁMICO DE EMPRESA ACTIVA E INTERRUPTOR DE TEMA -->
-        <header class="h-16 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 px-6 flex items-center justify-between gap-4 shrink-0 z-20">
+        <header class="min-h-16 py-2.5 bg-white/95 dark:bg-slate-900/95 backdrop-blur border-b border-slate-200 dark:border-slate-800 px-4 lg:px-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 shrink-0 z-20">
             <!-- Izquierda: Contexto Multi-Tenant -->
-            <div class="flex items-center gap-3 flex-wrap">
-                <div class="flex items-center gap-2">
-                    <span class="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <div class="flex items-center gap-2.5 flex-wrap min-w-0 flex-1">
+                <div class="flex items-center gap-2 min-w-0">
+                    <span class="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 whitespace-nowrap shrink-0">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse"></span>
-                        Empresa Activa:
+                        Empresa:
                     </span>
 
                     <!-- Selector Desplegable Multi-Empresa -->
-                    <div class="relative">
+                    <div class="relative min-w-0">
                         <select id="selectorEmpresaGlobal"
                                 aria-label="Seleccionar empresa cliente activa"
-                                class="appearance-none bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 hover:border-emerald-500/60 focus:border-emerald-500 text-slate-900 dark:text-slate-100 text-sm font-medium rounded-xl pl-3.5 pr-9 py-1.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
+                                class="appearance-none max-w-[230px] sm:max-w-[300px] 2xl:max-w-[380px] truncate bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 hover:border-emerald-500/60 focus:border-emerald-500 text-slate-900 dark:text-slate-100 text-xs sm:text-sm font-medium rounded-xl pl-3 pr-8 py-1.5 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500/20">
                             <?php if (!empty($empresasSelector)): ?>
                                 <?php foreach ($empresasSelector as $empItem): ?>
                                     <option value="<?= (int)$empItem['id'] ?>"
@@ -302,7 +302,7 @@ $empresaActivaTasaBcv = (float)($empresaActiva['tasa_bcv_usd'] ?? Session::get('
                                 <option value="0">Sin empresas activas</option>
                             <?php endif; ?>
                         </select>
-                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-slate-500 dark:text-slate-400">
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500 dark:text-slate-400">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
@@ -311,24 +311,24 @@ $empresaActivaTasaBcv = (float)($empresaActiva['tasa_bcv_usd'] ?? Session::get('
                 </div>
 
                 <!-- Píldoras de Metadatos Fiscales SENIAT -->
-                <div class="hidden xl:flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
-                    <span class="px-2.5 py-1 rounded-lg text-xs font-mono font-medium bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700"
+                <div class="hidden xl:flex items-center gap-2 pl-2.5 border-l border-slate-200 dark:border-slate-800 flex-wrap">
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-mono font-medium whitespace-nowrap shrink-0 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700"
                           title="Registro de Información Fiscal">
                         RIF: <?= e($empresaActivaRif) ?>
                     </span>
 
                     <?php if ($empresaActivaTipo === 'Especial'): ?>
-                        <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30"
+                        <span class="px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0 bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30"
                               title="Sujeto Pasivo Especial SENIAT">
-                            Contribuyente Especial (Ret. <?= e($empresaActivaRetIva) ?>%)
+                            Especial (Ret. <?= e($empresaActivaRetIva) ?>%)
                         </span>
                     <?php else: ?>
-                        <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-sky-500/15 text-sky-700 dark:text-sky-300 border border-sky-500/30">
-                            Contribuyente <?= e($empresaActivaTipo) ?> (Ret. <?= e($empresaActivaRetIva) ?>%)
+                        <span class="px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0 bg-sky-500/15 text-sky-700 dark:text-sky-300 border border-sky-500/30">
+                            <?= e($empresaActivaTipo) ?> (Ret. <?= e($empresaActivaRetIva) ?>%)
                         </span>
                     <?php endif; ?>
 
-                    <span class="px-2.5 py-1 rounded-lg text-xs font-mono bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20"
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-mono whitespace-nowrap shrink-0 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20"
                           title="Período Fiscal Activo">
                         Período: <?= e($empresaActivaPeriodo) ?>
                     </span>
@@ -336,27 +336,27 @@ $empresaActivaTasaBcv = (float)($empresaActiva['tasa_bcv_usd'] ?? Session::get('
             </div>
 
             <!-- Derecha: Tasa BCV + Selector de Tema (Sol / Luna) + Acciones Rápidas -->
-            <div class="flex items-center gap-2.5">
+            <div class="flex items-center gap-2 shrink-0 flex-wrap">
                 <!-- Botón Rápido de Tasa Oficial BCV (Bs./USD) -->
                 <button type="button"
                         onclick="window.JurisApp.abrirModalTasaBcv()"
                         title="Clic para actualizar la Tasa Oficial del Dólar BCV y sincronizar Cestaticket ($40 BCV)"
-                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 transition-colors">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span>BCV: Bs. <span id="lblTasaBcvHeader"><?= e(number_format($empresaActivaTasaBcv, 2, ',', '.')) ?></span> / $</span>
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold whitespace-nowrap shrink-0 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 transition-colors">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                    <span>BCV: Bs. <span id="lblTasaBcvHeader"><?= e(number_format($empresaActivaTasaBcv, 2, ',', '.')) ?></span>/$</span>
                 </button>
 
                 <!-- Botón Interruptor Modo Claro / Modo Oscuro -->
                 <button type="button" id="btnToggleTheme"
                         onclick="window.JurisApp.alternarTema()"
                         title="Cambiar entre Modo Claro y Modo Oscuro"
-                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors">
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap shrink-0 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors">
                     <!-- Icono Sol (visible en modo oscuro para cambiar a claro) -->
-                    <svg id="iconThemeSun" class="w-4 h-4 text-amber-400 hidden dark:inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg id="iconThemeSun" class="w-4 h-4 text-amber-400 hidden dark:inline-block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
                     </svg>
                     <!-- Icono Luna (visible en modo claro para cambiar a oscuro) -->
-                    <svg id="iconThemeMoon" class="w-4 h-4 text-indigo-600 inline-block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg id="iconThemeMoon" class="w-4 h-4 text-indigo-600 inline-block dark:hidden shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
                     </svg>
                     <span id="labelThemeMode" class="hidden md:inline">Tema</span>
@@ -364,24 +364,24 @@ $empresaActivaTasaBcv = (float)($empresaActiva['tasa_bcv_usd'] ?? Session::get('
 
                 <a href="<?= e(route_url('manual', 'index')) ?>"
                    title="Abrir Manual de Usuario y Guía de Reportes"
-                   class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors">
-                    <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap shrink-0 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors">
+                    <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                     </svg>
                     Manual
                 </a>
 
                 <a href="<?= e(route_url('empresa', 'index')) ?>"
-                   class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors">
-                    <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap shrink-0 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 transition-colors">
+                    <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
-                    Gestionar Empresas
+                    Empresas
                 </a>
 
                 <a href="<?= e(route_url('auth', 'logout')) ?>"
-                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/20 transition-colors">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap shrink-0 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 border border-rose-500/20 transition-colors">
+                    <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                     </svg>
                     Salir
