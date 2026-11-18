@@ -340,6 +340,49 @@ final class BancoModel
     }
 
     /**
+     * Elimina una cuenta bancaria si no posee movimientos contabilizados ni conciliaciones cerradas
+     */
+    public function eliminarCuenta(int $id, int $empresaId): void
+    {
+        $cuenta = $this->obtenerCuentaPorId($id, $empresaId);
+        if (!$cuenta) {
+            throw new RuntimeException('Cuenta bancaria no encontrada para la empresa activa.');
+        }
+
+        $stmtAsientos = $this->db->prepare(
+            'SELECT COUNT(*) FROM movimientos_bancarios
+             WHERE cuenta_bancaria_id = :id AND empresa_id = :empresa_id AND asiento_id IS NOT NULL'
+        );
+        $stmtAsientos->execute([
+            ':id'         => $id,
+            ':empresa_id' => $empresaId,
+        ]);
+        if ((int)$stmtAsientos->fetchColumn() > 0) {
+            throw new RuntimeException('No se puede eliminar esta cuenta porque tiene movimientos enlazados a asientos contables. Puede inactivarla en su lugar.');
+        }
+
+        $stmtConc = $this->db->prepare(
+            "SELECT COUNT(*) FROM conciliaciones_bancarias
+             WHERE cuenta_bancaria_id = :id AND empresa_id = :empresa_id AND estatus = 'Conciliada'"
+        );
+        $stmtConc->execute([
+            ':id'         => $id,
+            ':empresa_id' => $empresaId,
+        ]);
+        if ((int)$stmtConc->fetchColumn() > 0) {
+            throw new RuntimeException('No se puede eliminar esta cuenta porque posee conciliaciones mensuales cerradas. Puede inactivarla en su lugar.');
+        }
+
+        $stmtDel = $this->db->prepare(
+            'DELETE FROM cuentas_bancarias WHERE id = :id AND empresa_id = :empresa_id'
+        );
+        $stmtDel->execute([
+            ':id'         => $id,
+            ':empresa_id' => $empresaId,
+        ]);
+    }
+
+    /**
      * Resumen de saldos bancarios para el Dashboard Ejecutivo
      */
     public function obtenerSaldoTotalBancos(int $empresaId): array

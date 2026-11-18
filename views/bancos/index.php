@@ -117,8 +117,13 @@ $puedeEditar = in_array($usuarioRol, ['admin', 'contador'], true);
                                 </button>
                                 <button type="button"
                                         onclick="cambiarEstatusCuenta(<?= (int)$cta['id'] ?>, '<?= $esActiva ? 'Inactiva' : 'Activa' ?>')"
-                                        class="px-2.5 py-1.5 rounded-lg text-xs font-medium <?= $esActiva ? 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200' ?> border transition-colors">
+                                        class="px-2.5 py-1.5 rounded-lg text-xs font-medium <?= $esActiva ? 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200' ?> border transition-colors">
                                     <?= $esActiva ? 'Inactivar' : 'Activar' ?>
+                                </button>
+                                <button type="button"
+                                        onclick="eliminarCuenta(<?= (int)$cta['id'] ?>, <?= e(json_encode($cta['banco_nombre'] . ' •••• ' . $ultimos4)) ?>)"
+                                        class="px-2.5 py-1.5 rounded-lg text-xs font-medium bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors">
+                                    Eliminar
                                 </button>
                             <?php endif; ?>
                         </div>
@@ -567,6 +572,27 @@ $puedeEditar = in_array($usuarioRol, ['admin', 'contador'], true);
             window.location.reload();
         } catch (err) {
             Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+        }
+    };
+
+    window.eliminarCuenta = async (id, etiqueta) => {
+        const conf = await Swal.fire({
+            icon: 'warning',
+            title: '¿Eliminar cuenta bancaria?',
+            text: `Se eliminará la cuenta ${etiqueta}. Esta acción no se puede deshacer.`,
+            showCancelButton: true,
+            confirmButtonColor: '#be123c',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+        if (!conf.isConfirmed) return;
+
+        try {
+            const res = await postJson(`${BASE_URL}/index.php?c=bancos&a=eliminarCuenta`, { id });
+            await Swal.fire({ icon: 'success', title: 'Eliminada', text: res.message, timer: 1600, showConfirmButton: false });
+            window.location.href = `${BASE_URL}/index.php?c=bancos&a=index`;
+        } catch (err) {
+            Swal.fire({ icon: 'error', title: 'No se pudo eliminar', text: err.message });
         }
     };
 

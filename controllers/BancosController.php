@@ -152,6 +152,29 @@ final class BancosController extends Controller
         }
     }
 
+    public function eliminarCuenta(): void
+    {
+        $this->requireAuth();
+        $this->requireRole(['admin', 'contador']);
+        $this->requirePost();
+        $this->requireCsrf();
+
+        $empresaId = $this->requireEmpresaActiva();
+        $payload   = $this->getJsonInput();
+        $id        = (int)($payload['id'] ?? $_POST['id'] ?? 0);
+
+        try {
+            $bancoModel = new BancoModel();
+            $bancoModel->eliminarCuenta($id, $empresaId);
+            $this->json([
+                'ok'      => true,
+                'message' => 'Cuenta bancaria eliminada correctamente.',
+            ]);
+        } catch (Throwable $e) {
+            $this->json(['ok' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
     public function registrarMovimiento(): void
     {
         $this->requireAuth();
