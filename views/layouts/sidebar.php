@@ -226,12 +226,28 @@ $empresaActivaTasaBcv = (float)($empresaActiva['tasa_bcv_usd'] ?? Session::get('
                     </ul>
                 </div>
 
-                <!-- MÓDULO 5: DOCUMENTACIÓN Y MANUAL DE USUARIO -->
+                <!-- MÓDULO 5: ADMINISTRACIÓN Y DOCUMENTACIÓN -->
                 <div>
                     <p class="sidebar-section-label px-3 mb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                        5. Ayuda y Soporte
+                        5. Administración y Ayuda
                     </p>
                     <ul class="space-y-1">
+                        <?php if ($usuarioRol === 'admin'): ?>
+                            <li>
+                                <a href="<?= e(route_url('usuarios', 'index')) ?>"
+                                   class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'usuarios'
+                                       ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 shadow-sm'
+                                       : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-slate-100' ?>">
+                                    <div class="flex items-center gap-3">
+                                        <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'usuarios' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                                        </svg>
+                                        <span class="sidebar-text">Usuarios y Permisos</span>
+                                    </div>
+                                    <span class="sidebar-badge text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-600 dark:text-amber-300">Admin</span>
+                                </a>
+                            </li>
+                        <?php endif; ?>
                         <li>
                             <a href="<?= e(route_url('manual', 'index')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'manual'

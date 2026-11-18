@@ -2176,6 +2176,162 @@
         recalcularIslr
     };
 
+    // =========================================================================
+    // MÓDULO DE GESTIÓN DE USUARIOS, ROLES Y PERMISOS (SOLO ADMIN, TODO POST)
+    // =========================================================================
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const formUsuario = document.getElementById('formUsuarioCrud');
+        if (formUsuario) {
+            formUsuario.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const payload = {
+                    id: Number(document.getElementById('usr_id')?.value || 0),
+                    nombre: document.getElementById('usr_nombre')?.value || '',
+                    email: document.getElementById('usr_email')?.value || '',
+                    rol: document.getElementById('usr_rol')?.value || 'contador',
+                    password: document.getElementById('usr_password')?.value || '',
+                    activo: Number(document.getElementById('usr_activo')?.value || 1),
+                    permisos: {
+                        empresas: document.getElementById('perm_empresas')?.checked ? 1 : 0,
+                        contabilidad: document.getElementById('perm_contabilidad')?.checked ? 1 : 0,
+                        tributario: document.getElementById('perm_tributario')?.checked ? 1 : 0,
+                        nomina: document.getElementById('perm_nomina')?.checked ? 1 : 0,
+                        anular: document.getElementById('perm_anular')?.checked ? 1 : 0
+                    }
+                };
+
+                try {
+                    const res = await requestJson(`${BASE_URL}/index.php?c=usuarios&a=guardar`, {
+                        method: 'POST',
+                        body: payload
+                    });
+                    cerrarModalUsuario();
+                    await alertaSwal({
+                        icon: 'success',
+                        title: 'Usuario Guardado',
+                        text: res.message,
+                        timer: 1800,
+                        showConfirmButton: false
+                    });
+                    window.location.reload();
+                } catch (err) {
+                    alertaSwal({ icon: 'error', title: 'Error de Validación', text: err.message });
+                }
+            });
+        }
+    });
+
+    async function abrirModalUsuario(id = 0) {
+        const modal = document.getElementById('modalUsuarioForm');
+        const form = document.getElementById('formUsuarioCrud');
+        if (!modal || !form) return;
+
+        form.reset();
+        document.getElementById('usr_id').value = String(id);
+
+        const lblReq = document.getElementById('lblPassRequerida');
+        const lblOpc = document.getElementById('lblPassOpcional');
+
+        if (id > 0) {
+            document.getElementById('modalUsuarioTitulo').textContent = 'Editar Usuario, Correo, Clave y Permisos';
+            if (lblReq) lblReq.classList.add('hidden');
+            if (lblOpc) lblOpc.classList.remove('hidden');
+
+            try {
+                const res = await requestJson(`${BASE_URL}/index.php?c=usuarios&a=obtener`, {
+                    method: 'POST',
+                    body: { id: Number(id) }
+                });
+                const u = res.usuario;
+                document.getElementById('usr_nombre').value = u.nombre || '';
+                document.getElementById('usr_email').value = u.email || '';
+                document.getElementById('usr_rol').value = u.rol || 'contador';
+                document.getElementById('usr_activo').value = String(u.activo ?? 1);
+                document.getElementById('usr_password').value = '';
+
+                const p = u.permisos || {};
+                document.getElementById('perm_empresas').checked = Boolean(p.empresas);
+                document.getElementById('perm_contabilidad').checked = Boolean(p.contabilidad);
+                document.getElementById('perm_tributario').checked = Boolean(p.tributario);
+                document.getElementById('perm_nomina').checked = Boolean(p.nomina);
+                document.getElementById('perm_anular').checked = Boolean(p.anular);
+            } catch (err) {
+                alertaSwal({ icon: 'error', title: 'Error', text: err.message });
+                return;
+            }
+        } else {
+            document.getElementById('modalUsuarioTitulo').textContent = 'Registrar Nuevo Usuario';
+            if (lblReq) lblReq.classList.remove('hidden');
+            if (lblOpc) lblOpc.classList.add('hidden');
+            document.getElementById('usr_rol').value = 'contador';
+            aplicarPermisosPorRol();
+        }
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function cerrarModalUsuario() {
+        const modal = document.getElementById('modalUsuarioForm');
+        if (!modal) return;
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+    function aplicarPermisosPorRol() {
+        const rol = document.getElementById('usr_rol')?.value || 'contador';
+        if (rol === 'admin') {
+            document.getElementById('perm_empresas').checked = true;
+            document.getElementById('perm_contabilidad').checked = true;
+            document.getElementById('perm_tributario').checked = true;
+            document.getElementById('perm_nomina').checked = true;
+            document.getElementById('perm_anular').checked = true;
+        } else if (rol === 'contador') {
+            document.getElementById('perm_empresas').checked = true;
+            document.getElementById('perm_contabilidad').checked = true;
+            document.getElementById('perm_tributario').checked = true;
+            document.getElementById('perm_nomina').checked = true;
+            document.getElementById('perm_anular').checked = true;
+        } else {
+            document.getElementById('perm_empresas').checked = false;
+            document.getElementById('perm_contabilidad').checked = true;
+            document.getElementById('perm_tributario').checked = true;
+            document.getElementById('perm_nomina').checked = false;
+            document.getElementById('perm_anular').checked = false;
+        }
+    }
+
+    async function cambiarEstadoUsuario(id, nuevoEstado, nombre) {
+        const accion = nuevoEstado === 1 ? 'activar' : 'inactivar';
+        const confirmacion = await alertaSwal({
+            icon: 'warning',
+            title: `¿Desea ${accion} a ${nombre}?`,
+            showCancelButton: true,
+            confirmButtonText: `Sí, ${accion}`,
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (!confirmacion.isConfirmed) return;
+
+        try {
+            const res = await requestJson(`${BASE_URL}/index.php?c=usuarios&a=cambiarEstado`, {
+                method: 'POST',
+                body: { id: Number(id), activo: Number(nuevoEstado) }
+            });
+            await alertaSwal({
+                icon: 'success',
+                title: 'Estado Actualizado',
+                text: res.message,
+                timer: 1600,
+                showConfirmButton: false
+            });
+            window.location.reload();
+        } catch (err) {
+            alertaSwal({ icon: 'error', title: 'Error', text: err.message });
+        }
+    }
+
     window.JurisNomina = {
         abrirModalTrabajador,
         cerrarModalTrabajador,
@@ -2192,5 +2348,12 @@
         procesarYGuardarCestaticket,
         aplicarCestaticketPorTasaBcv,
         calcularSalarioBsDesdeUsd
+    };
+
+    window.JurisUsuarios = {
+        abrirModalUsuario,
+        cerrarModalUsuario,
+        aplicarPermisosPorRol,
+        cambiarEstadoUsuario
     };
 })();

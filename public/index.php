@@ -59,6 +59,8 @@ $controllerMap = [
     'tributario'   => \Controllers\TributarioController::class,
     'nomina'       => \Controllers\NominaController::class,
     'manual'       => \Controllers\ManualController::class,
+    'usuarios'     => \Controllers\UsuarioController::class,
+    'usuario'      => \Controllers\UsuarioController::class,
 ];
 
 if (!isset($controllerMap[$controllerParam])) {
