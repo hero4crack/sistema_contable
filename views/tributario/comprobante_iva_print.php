@@ -20,7 +20,7 @@ $totRet   = 0.0;
 <head>
     <meta charset="UTF-8">
     <title>Comprobante de Retención IVA N° <?= e($comp['numero_comprobante'] ?? '') ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="<?= e(base_url('assets/vendor/tailwind/tailwindcss.js')) ?>"></script>
     <style>
         @page { size: landscape; margin: 12mm; }
         @media print {

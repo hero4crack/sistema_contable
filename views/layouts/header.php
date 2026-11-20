@@ -22,20 +22,15 @@ $empresaActivaRetIva  = (string)($empresaActiva['porcentaje_retencion_iva'] ?? S
     <meta name="base-url" content="<?= e(BASE_URL) ?>">
     <title><?= e($tituloPagina ?? APP_NAME) ?></title>
 
-    <!-- Tipografías: Inter (UI) y JetBrains Mono (Cifras contables y RIF) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- Tailwind CSS CDN (Modo Claro Institucional Blanco y Verde) -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS Local (Sin dependencia de internet - Modo Claro Blanco y Verde) -->
+    <script src="<?= e(base_url('assets/vendor/tailwind/tailwindcss.js')) ?>"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
+                        sans: ['"Segoe UI"', 'system-ui', '-apple-system', 'Roboto', 'sans-serif'],
+                        mono: ['"Cascadia Code"', 'Consolas', 'ui-monospace', 'monospace'],
                     },
                     colors: {
                         juris: {
@@ -51,8 +46,8 @@ $empresaActivaRetIva  = (string)($empresaActiva['porcentaje_retencion_iva'] ?? S
         };
     </script>
 
-    <!-- SweetAlert2 CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- SweetAlert2 Local -->
+    <script src="<?= e(base_url('assets/vendor/sweetalert2/sweetalert2.all.min.js')) ?>"></script>
 
     <style>
         ::-webkit-scrollbar { width: 6px; height: 6px; }

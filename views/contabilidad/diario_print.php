@@ -26,7 +26,7 @@ $diferencia = round(abs($sumaTotalDebe - $sumaTotalHaber), 2);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $esResumen ? 'Resumen de Diario' : 'Libro Diario Legal' ?> — <?= e((string)$empresa['razon_social']) ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="<?= e(base_url('assets/vendor/tailwind/tailwindcss.js')) ?>"></script>
     <style>
         @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }

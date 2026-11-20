@@ -11,7 +11,7 @@ $folioStr   = str_pad((string)($folio ?? 1), 4, '0', STR_PAD_LEFT);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Libro Mayor Oficial — <?= e((string)$empresa['razon_social']) ?></title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="<?= e(base_url('assets/vendor/tailwind/tailwindcss.js')) ?>"></script>
     <style>
         @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
