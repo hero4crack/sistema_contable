@@ -785,9 +785,8 @@ foreach ($ventas as $vRow) {
                     <label class="block text-xs font-medium text-slate-700 mb-1">Condición del Cliente</label>
                     <select name="tipo_contribuyente_cliente"
                             class="w-full rounded-xl bg-slate-50 border border-slate-300 px-3 py-2 text-xs text-slate-900">
-                        <option value="Ordinario">Ordinario</option>
-                        <option value="Especial">Especial (Agente Retención)</option>
-                        <option value="No Sujeto">No Sujeto / Persona Natural</option>
+                        <option value="Ordinario">No Especial</option>
+                        <option value="Especial">Especial (Agente de Retención)</option>
                     </select>
                 </div>
 
