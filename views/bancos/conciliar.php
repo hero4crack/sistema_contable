@@ -324,6 +324,83 @@ $estatusConc    = (string)($conciliacionActual['estatus'] ?? 'Borrador');
         </div>
     <?php endif; ?>
 
+    <!-- HISTORIAL DE CONCILIACIONES GUARDADAS (BORRADORES Y APROBADAS) -->
+    <div class="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+            <div>
+                <h2 class="text-sm font-bold text-slate-900">Conciliaciones Guardadas (Borradores y Aprobadas)</h2>
+                <p class="text-xs text-slate-500">Cada vez que guardas un borrador o apruebas una conciliación queda registrada aquí.</p>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg text-xs font-mono font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                <?= count($historialConciliaciones ?? []) ?> registros
+            </span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-slate-50 border-b border-slate-200 text-[11px] uppercase text-slate-600">
+                    <tr>
+                        <th class="py-3 px-4">Período</th>
+                        <th class="py-3 px-4">Cuenta Bancaria</th>
+                        <th class="py-3 px-4 text-right">Saldo Banco</th>
+                        <th class="py-3 px-4 text-right">Saldo Libros</th>
+                        <th class="py-3 px-4 text-right">Diferencia</th>
+                        <th class="py-3 px-4 text-center">Estatus</th>
+                        <th class="py-3 px-4 text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                    <?php if (!empty($historialConciliaciones)): ?>
+                        <?php foreach ($historialConciliaciones as $hc): ?>
+                            <?php $simHc = ($hc['moneda'] ?? 'VES') === 'USD' ? '$ ' : 'Bs. '; ?>
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 px-4 font-mono font-bold text-slate-900"><?= e($hc['periodo']) ?></td>
+                                <td class="py-3 px-4">
+                                    <?= e($hc['banco_nombre']) ?>
+                                    <span class="font-mono text-slate-500">(•••• <?= e(substr((string)$hc['numero_cuenta'], -4)) ?>)</span>
+                                </td>
+                                <td class="py-3 px-4 text-right font-mono"><?= e($simHc . number_format((float)$hc['saldo_segun_banco'], 2, ',', '.')) ?></td>
+                                <td class="py-3 px-4 text-right font-mono"><?= e($simHc . number_format((float)$hc['saldo_segun_libros'], 2, ',', '.')) ?></td>
+                                <td class="py-3 px-4 text-right font-mono font-semibold <?= abs((float)$hc['diferencia']) < 0.01 ? 'text-emerald-700' : 'text-amber-700' ?>">
+                                    <?= e($simHc . number_format((float)$hc['diferencia'], 2, ',', '.')) ?>
+                                </td>
+                                <td class="py-3 px-4 text-center">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold <?= $hc['estatus'] === 'Conciliada' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-50 text-amber-800 border border-amber-200' ?>">
+                                        <?= e($hc['estatus']) ?>
+                                    </span>
+                                </td>
+                                <td class="py-3 px-4 text-right whitespace-nowrap">
+                                    <div class="inline-flex items-center gap-1.5">
+                                        <a href="<?= e(route_url('bancos', 'conciliar', ['cuenta_id' => $hc['cuenta_bancaria_id'], 'periodo' => $hc['periodo']])) ?>"
+                                           class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-white hover:bg-slate-100 text-slate-700 border border-slate-300">
+                                            Cargar
+                                        </a>
+                                        <a href="<?= e(route_url('bancos', 'conciliacionPrint', ['cuenta_id' => $hc['cuenta_bancaria_id'], 'periodo' => $hc['periodo']])) ?>"
+                                           target="_blank"
+                                           class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                            Imprimir
+                                        </a>
+                                        <button type="button"
+                                                onclick="eliminarBorradorConciliacion(<?= (int)$hc['id'] ?>, <?= e(json_encode($hc['periodo'] . ' — ' . $hc['banco_nombre'])) ?>)"
+                                                class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 cursor-pointer">
+                                            Borrar
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="7" class="py-8 text-center text-slate-500">
+                                Aún no hay conciliaciones guardadas para esta empresa.
+                            </td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
 <?php if ($cuentaSeleccionada): ?>
@@ -438,7 +515,7 @@ $estatusConc    = (string)($conciliacionActual['estatus'] ?? 'Borrador');
                 periodo: PERIODO
             });
             await Swal.fire({ icon: 'success', title: 'Cruce Automático', text: res.message });
-            window.location.reload();
+            window.location.href = `${BASE_URL}/index.php?c=bancos&a=conciliar&cuenta_id=${CUENTA_ID}&periodo=${encodeURIComponent(PERIODO)}`;
         } catch (err) {
             Swal.fire({ icon: 'error', title: 'Error', text: err.message });
         }
@@ -459,7 +536,7 @@ $estatusConc    = (string)($conciliacionActual['estatus'] ?? 'Borrador');
                 observaciones: document.getElementById('conc_observaciones').value || ''
             });
             await Swal.fire({ icon: 'success', title: 'Conciliación Guardada', text: res.message });
-            window.location.reload();
+            window.location.href = `${BASE_URL}/index.php?c=bancos&a=conciliar&cuenta_id=${CUENTA_ID}&periodo=${encodeURIComponent(PERIODO)}`;
         } catch (err) {
             Swal.fire({ icon: 'error', title: 'Validación', text: err.message });
         }
@@ -469,3 +546,43 @@ $estatusConc    = (string)($conciliacionActual['estatus'] ?? 'Borrador');
 })();
 </script>
 <?php endif; ?>
+
+<script>
+window.eliminarBorradorConciliacion = async (id, label) => {
+    const confirm = await Swal.fire({
+        icon: 'warning',
+        title: '¿Eliminar conciliación?',
+        text: `Se eliminará la conciliación bancaria (${label}). Esta acción no se puede deshacer.`,
+        showCancelButton: true,
+        confirmButtonColor: '#e11d48',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Sí, borrar',
+        cancelButtonText: 'Cancelar'
+    });
+    if (!confirm.isConfirmed) return;
+
+    const getMeta = (name) => document.querySelector(`meta[name="${name}"]`)?.getAttribute('content') || '';
+    const BASE_URL = getMeta('base-url');
+    const CSRF = getMeta('csrf-token');
+
+    try {
+        const res = await fetch(`${BASE_URL}/index.php?c=bancos&a=eliminarConciliacion`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
+            body: JSON.stringify({ id })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+            throw new Error(data.message || 'No se pudo eliminar el borrador.');
+        }
+        await Swal.fire({ icon: 'success', title: 'Borrador Eliminado', text: data.message });
+        <?php if ($cuentaSeleccionada): ?>
+        window.location.href = `${BASE_URL}/index.php?c=bancos&a=conciliar&cuenta_id=<?= (int)$cuentaSeleccionada['id'] ?>&periodo=<?= urlencode($periodo) ?>`;
+        <?php else: ?>
+        window.location.reload();
+        <?php endif; ?>
+    } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+    }
+};
+</script>

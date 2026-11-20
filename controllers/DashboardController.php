@@ -32,11 +32,14 @@ final class DashboardController extends Controller
 
         $metricas = [];
         $bancosStats = ['total_cuentas' => 0, 'saldo_ves' => 0.0, 'saldo_usd' => 0.0];
+        $alertasDeberes = [];
         if ($empresaActiva) {
             // Asegurar inicialización de tablas y muestras tributarias de Fase 3
             new \Models\TributarioModel();
             $bancoModel = new \Models\BancoModel();
             $bancosStats = $bancoModel->obtenerSaldoTotalBancos((int)$empresaActiva['id']);
+            $deberesModel = new \Models\DeberesFormalesModel();
+            $alertasDeberes = $deberesModel->obtenerAlertasVencimiento((int)$empresaActiva['id']);
             $metricas = $empresaModel->obtenerMetricasDashboard(
                 (int)$empresaActiva['id'],
                 (string)$empresaActiva['periodo_fiscal_activo']
@@ -44,12 +47,13 @@ final class DashboardController extends Controller
         }
 
         $this->render('dashboard/index', [
-            'tituloPagina'  => 'Dashboard Ejecutivo | ' . APP_NAME,
-            'moduloActivo'  => 'dashboard',
-            'empresaActiva' => $empresaActiva,
-            'metricas'      => $metricas,
-            'bancosStats'   => $bancosStats,
-            'alertaFlash'   => Session::flash('alerta'),
+            'tituloPagina'   => 'Dashboard Ejecutivo | ' . APP_NAME,
+            'moduloActivo'   => 'dashboard',
+            'empresaActiva'  => $empresaActiva,
+            'metricas'       => $metricas,
+            'bancosStats'    => $bancosStats,
+            'alertasDeberes' => $alertasDeberes,
+            'alertaFlash'    => Session::flash('alerta'),
         ]);
     }
 }

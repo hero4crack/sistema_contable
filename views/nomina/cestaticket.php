@@ -253,10 +253,11 @@ $filasPreCest   = $precalculo['filas'] ?? [];
                        class="px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 transition">
                         Exportar Excel (CSV)
                     </a>
-                    <button type="button" onclick="window.print()"
-                            class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+                    <a href="<?= e(route_url('nomina', 'cestaticketPrint', ['lote_id' => $loteSeleccionado['id']])) ?>"
+                       target="_blank"
+                       class="px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
                         Imprimir Relación
-                    </button>
+                    </a>
                     <a href="<?= e(route_url('nomina', 'reciboPrint', ['cestaticket_lote_id' => $loteSeleccionado['id']])) ?>"
                        target="_blank"
                        class="px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-600 hover:bg-amber-500 text-white shadow transition">

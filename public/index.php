@@ -61,12 +61,14 @@ $controllerMap = [
     'divisas'      => \Controllers\DivisasController::class,
     'divisa'       => \Controllers\DivisasController::class,
     'tributario'   => \Controllers\TributarioController::class,
+    'deberes'      => \Controllers\DeberesController::class,
     'nomina'       => \Controllers\NominaController::class,
     'manual'       => \Controllers\ManualController::class,
     'usuarios'     => \Controllers\UsuarioController::class,
     'usuario'      => \Controllers\UsuarioController::class,
     'respaldo'     => \Controllers\RespaldoController::class,
     'respaldos'    => \Controllers\RespaldoController::class,
+    'auditoria'    => \Controllers\AuditoriaController::class,
 ];
 
 if (!isset($controllerMap[$controllerParam])) {
@@ -89,5 +91,7 @@ if (!method_exists($controllerInstance, $actionParam)) {
     echo '</body></html>';
     exit;
 }
+
+\Core\AuditLogger::captureRequestStart($controllerParam, $actionParam);
 
 $controllerInstance->{$actionParam}();

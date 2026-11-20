@@ -14,10 +14,11 @@ $tituloDoc     = $esCestaticket
     <title><?= e($tituloDoc) ?> — <?= e((string)$empresa['razon_social']) ?></title>
     <script src="<?= e(base_url('assets/vendor/tailwind/tailwindcss.js')) ?>"></script>
     <style>
+        @page { margin: 0mm; }
         @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
-            body { background: #ffffff !important; color: #000000 !important; }
+            body { background: #ffffff !important; color: #000000 !important; padding: 8mm !important; }
             .page-break { page-break-after: always; }
         }
         body {

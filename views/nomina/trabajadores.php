@@ -395,7 +395,7 @@ foreach ($trabajadores as $t) {
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Banco Nómina</label>
                     <input type="text" name="banco" id="trab_banco" placeholder="BANCO PROVINCIAL / BANCAMIGA"
@@ -404,6 +404,11 @@ foreach ($trabajadores as $t) {
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Cuenta Bancaria (20 dígitos)</label>
                     <input type="text" maxlength="20" name="numero_cuenta" id="trab_numero_cuenta" placeholder="01080025140100984512"
+                           class="w-full px-3 py-2 rounded-xl text-xs font-mono bg-slate-50 border border-slate-300 text-slate-900">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">Pago Móvil (Teléfono)</label>
+                    <input type="text" maxlength="25" name="pago_movil_telefono" id="trab_pago_movil" placeholder="0414-1234567"
                            class="w-full px-3 py-2 rounded-xl text-xs font-mono bg-slate-50 border border-slate-300 text-slate-900">
                 </div>
                 <div>

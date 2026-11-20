@@ -34,6 +34,13 @@ foreach ($usuarios as $u) {
     </div>
 
     <div class="flex flex-wrap items-center gap-2.5">
+        <a href="<?= e(route_url('respaldo', 'index')) ?>"
+           class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 transition">
+            <svg class="w-4 h-4 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/>
+            </svg>
+            Respaldo BD (.SQL)
+        </a>
         <button type="button"
                 onclick="window.JurisUsuarios?.abrirModalUsuario(<?= (int)$usuarioActualId ?>)"
                 class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 transition">

@@ -78,6 +78,7 @@ $filasPrecalculo = $precalculo['filas'] ?? [];
                     class="w-full px-3 py-2 rounded-xl text-xs bg-slate-50 border border-slate-300 text-slate-900">
                 <option value="PRIMERA_QUINCENA">1ra Quincena (15 días)</option>
                 <option value="SEGUNDA_QUINCENA">2da Quincena (15 días)</option>
+                <option value="SEMANAL">Semanal (7 días)</option>
                 <option value="MENSUAL">Mensual Completa (30 días)</option>
             </select>
         </div>
@@ -338,7 +339,16 @@ $filasPrecalculo = $precalculo['filas'] ?? [];
                        class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 transition">
                         Exportar Excel (CSV)
                     </a>
-                    <button type="button" onclick="window.print()"
+                    <select id="filtroSabanaIndividual"
+                            onchange="document.querySelectorAll('.fila-sabana').forEach(r => r.classList.toggle('hidden', this.value !== '' && r.dataset.detId !== this.value))"
+                            class="px-3 py-2 rounded-xl text-xs bg-white border border-slate-300 text-slate-800">
+                        <option value="">Sábana General (Todos)</option>
+                        <?php foreach ($loteSeleccionado['detalles'] as $detOpt): ?>
+                            <option value="<?= (int)$detOpt['id'] ?>">Individual: <?= e((string)$detOpt['nombre_completo']) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <button type="button"
+                            onclick="window.open('<?= e(route_url('nomina', 'sabanaPrint', ['nomina_id' => $loteSeleccionado['id']])) ?>&detalle_id=' + encodeURIComponent(document.getElementById('filtroSabanaIndividual')?.value || ''), '_blank')"
                             class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
                         Imprimir Sábana
                     </button>
@@ -385,7 +395,7 @@ $filasPrecalculo = $precalculo['filas'] ?? [];
                     </thead>
                     <tbody class="divide-y divide-slate-200">
                         <?php foreach ($loteSeleccionado['detalles'] as $idx => $det): ?>
-                            <tr>
+                            <tr class="fila-sabana" data-det-id="<?= (int)$det['id'] ?>">
                                 <td class="py-2.5 px-2 font-mono"><?= $idx + 1 ?></td>
                                 <td class="py-2.5 px-2">
                                     <div class="font-bold text-slate-900"><?= e((string)$det['nombre_completo']) ?></div>

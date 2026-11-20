@@ -13,11 +13,11 @@ $anterior = $relacion['saldo_anterior'] ?? ['saldo_usd' => 0.0, 'saldo_bs' => 0.
     <title>Relación en Divisas <?= e($periodo) ?> — <?= e((string)$emp['razon_social']) ?></title>
     <script src="<?= e(base_url('assets/vendor/tailwind/tailwindcss.js')) ?>"></script>
     <style>
-        @page { size: landscape; margin: 12mm; }
+        @page { size: landscape; margin: 0mm; }
         @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
-            body { background: #ffffff !important; padding: 0 !important; }
+            body { background: #ffffff !important; padding: 8mm !important; margin: 0 !important; }
             .hoja-divisas { box-shadow: none !important; border: none !important; max-width: 100% !important; margin: 0 !important; }
         }
     </style>

@@ -129,6 +129,35 @@ $escritorioStats= $m['escritorio'] ?? ['total_empresas' => 0, 'empresas_activas'
         </div>
 
         <!-- TARJETAS KPI CONECTADAS A LA BASE DE DATOS (EMPRESA ACTIVA) -->
+        <?php if (!empty($alertasDeberes)): ?>
+            <div class="rounded-2xl bg-amber-50 border border-amber-300 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div class="flex items-start gap-3">
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-bold bg-rose-100 text-rose-800 border border-rose-300 shrink-0">
+                        <?= count($alertasDeberes) ?> Alerta<?= count($alertasDeberes) > 1 ? 's' : '' ?>
+                    </span>
+                    <div class="text-xs text-slate-800">
+                        <strong class="block text-sm text-slate-900">Alertas de Vencimientos de Deberes Formales</strong>
+                        <span>
+                            <?php
+                            $resumenAlertas = array_map(
+                                static fn(array $a): string => $a['nombre_obligacion'] . ' (' . ($a['estatus_efectivo'] === 'VENCIDO' ? 'Vencido' : 'Pronto a vencer') . (!empty($a['fecha_vencimiento']) ? ': ' . date('d/m/Y', strtotime((string)$a['fecha_vencimiento'])) : '') . ')',
+                                array_slice($alertasDeberes, 0, 4)
+                            );
+                            echo e(implode(' • ', $resumenAlertas));
+                            if (count($alertasDeberes) > 4) {
+                                echo ' y ' . (count($alertasDeberes) - 4) . ' más.';
+                            }
+                            ?>
+                        </span>
+                    </div>
+                </div>
+                <a href="<?= e(route_url('deberes', 'index')) ?>"
+                   class="px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white shrink-0">
+                    Revisar Deberes Formales
+                </a>
+            </div>
+        <?php endif; ?>
+
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
             <!-- KPI BANCOS: Saldo Total en Bancos -->
             <a href="<?= e(route_url('bancos', 'index')) ?>" class="rounded-2xl bg-white border border-slate-200 p-5 flex flex-col justify-between hover:border-emerald-500/60 transition-all block">

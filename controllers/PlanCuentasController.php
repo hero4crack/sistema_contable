@@ -50,6 +50,28 @@ final class PlanCuentasController extends Controller
         ]);
     }
 
+    public function imprimir(): void
+    {
+        $this->requireAuth();
+
+        $empresaId     = Session::getEmpresaActivaId();
+        $empresaModel  = new EmpresaModel();
+        $empresaActiva = $empresaModel->obtenerPorId($empresaId);
+
+        if (!$empresaActiva) {
+            $this->redirect('empresa', 'index');
+        }
+
+        $planModel = new PlanCuentasModel();
+        $cuentas   = $planModel->listarPorEmpresa($empresaId);
+
+        $this->render('plan_cuentas/imprimir', [
+            'empresa'       => $empresaActiva,
+            'empresaActiva' => $empresaActiva,
+            'cuentas'       => $cuentas,
+        ], false);
+    }
+
     /**
      * Obtiene una cuenta por su ID dentro de la empresa activa (POST JSON)
      */

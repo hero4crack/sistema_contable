@@ -11,12 +11,22 @@ $comp = $comprobante ?? [];
     <title>Comprobante de Retención ISLR N° <?= e($comp['numero_comprobante'] ?? '') ?></title>
     <script src="<?= e(base_url('assets/vendor/tailwind/tailwindcss.js')) ?>"></script>
     <style>
-        @page { size: landscape; margin: 12mm; }
+        @page { size: letter landscape; margin: 0mm; }
         @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
-            body { background: #ffffff !important; padding: 0 !important; }
-            .hoja-comprobante { box-shadow: none !important; border: none !important; max-width: 100% !important; }
+            html, body { background: #ffffff !important; padding: 5mm !important; margin: 0 !important; height: auto !important; }
+            .hoja-comprobante {
+                box-shadow: none !important;
+                border: 1px solid #1e293b !important;
+                border-radius: 0 !important;
+                max-width: 100% !important;
+                padding: 6px 10px !important;
+                zoom: 0.78;
+                page-break-inside: avoid !important;
+            }
+            .hoja-comprobante .membrete-oficial { padding-bottom: 4px !important; margin-bottom: 4px !important; }
+            .hoja-comprobante .pie-reporte-oficial { margin-top: 4px !important; padding-top: 3px !important; }
         }
     </style>
 </head>
@@ -217,7 +227,7 @@ $comp = $comprobante ?? [];
         </div>
 
         <!-- FIRMAS Y SELLOS -->
-        <div class="grid grid-cols-2 gap-12 pt-12 mt-6 text-center">
+        <div class="grid grid-cols-2 gap-12 pt-6 mt-3 text-center">
             <div class="border-t border-slate-300 pt-2">
                 <p class="font-bold uppercase text-xs">ELABORADO POR (AGENTE DE RETENCIÓN):</p>
                 <p class="text-[11px] text-slate-600 mt-0.5"><?= e($emp['razon_social'] ?? '') ?> — RIF: <?= e($emp['rif'] ?? '') ?></p>

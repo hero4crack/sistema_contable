@@ -227,10 +227,11 @@ $puedeEditar = in_array($usuarioRol, ['admin', 'contador'], true);
                             <th class="py-3 px-3">RIF Sujeto Retenido</th>
                             <th class="py-3 px-4">Nombre o Razón Social</th>
                             <th class="py-3 px-3 text-center">Facturas</th>
+                            <th class="py-3 px-3 text-right">Monto Total</th>
                             <th class="py-3 px-3 text-right">IVA Causado</th>
                             <th class="py-3 px-3 text-center">% Ret.</th>
                             <th class="py-3 px-4 text-right">Monto IVA Retenido</th>
-                            <th class="py-3 px-5 text-right">Impresión Oficial</th>
+                            <th class="py-3 px-5 text-right">Acciones / Impresión</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200/60 font-mono">
@@ -242,24 +243,36 @@ $puedeEditar = in_array($usuarioRol, ['admin', 'contador'], true);
                                     <td class="py-3 px-3 text-emerald-700 font-semibold"><?= e($ri['rif_proveedor']) ?></td>
                                     <td class="py-3 px-4 font-sans font-medium text-slate-900"><?= e($ri['nombre_proveedor']) ?></td>
                                     <td class="py-3 px-3 text-center text-slate-700"><?= (int)($ri['cantidad_facturas'] ?: 1) ?></td>
+                                    <td class="py-3 px-3 text-right text-slate-700"><?= formato_ves($ri['total_facturas'] ?? 0) ?></td>
                                     <td class="py-3 px-3 text-right text-slate-800"><?= formato_ves($ri['monto_iva_causado']) ?></td>
                                     <td class="py-3 px-3 text-center text-slate-700"><?= number_format((float)$ri['porcentaje_retencion'], 0) ?>%</td>
                                     <td class="py-3 px-4 text-right font-bold text-emerald-700"><?= formato_ves($ri['monto_iva_retenido']) ?></td>
-                                    <td class="py-3 px-5 text-right">
-                                        <a href="<?= e(route_url('tributario', 'comprobanteIva', ['id' => (int)$ri['id']])) ?>"
-                                           target="_blank"
-                                           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-sans font-semibold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-800 border border-emerald-500/30 transition-colors">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                                            </svg>
-                                            Imprimir Comprobante
-                                        </a>
+                                    <td class="py-3 px-5 text-right whitespace-nowrap">
+                                        <div class="inline-flex items-center gap-1.5">
+                                            <?php if ($puedeEditar): ?>
+                                                <button type="button"
+                                                        onclick='abrirEditarRetIva(<?= e(json_encode($ri)) ?>)'
+                                                        class="px-2.5 py-1.5 rounded-lg text-xs font-sans font-medium bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 transition-colors">
+                                                    Editar
+                                                </button>
+                                                <button type="button"
+                                                        onclick="eliminarRetencion('iva', <?= (int)$ri['id'] ?>, <?= e(json_encode($ri['numero_comprobante'])) ?>)"
+                                                        class="px-2.5 py-1.5 rounded-lg text-xs font-sans font-medium bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors">
+                                                    Eliminar
+                                                </button>
+                                            <?php endif; ?>
+                                            <a href="<?= e(route_url('tributario', 'comprobanteIva', ['id' => (int)$ri['id']])) ?>"
+                                               target="_blank"
+                                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-sans font-semibold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-800 border border-emerald-500/30 transition-colors">
+                                                Imprimir
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="9" class="py-8 text-center font-sans text-slate-500">
+                                <td colspan="10" class="py-8 text-center font-sans text-slate-500">
                                     No se han emitido comprobantes de retención de IVA en el período <?= e($periodo) ?>.
                                 </td>
                             </tr>
@@ -438,12 +451,14 @@ $puedeEditar = in_array($usuarioRol, ['admin', 'contador'], true);
                             <th class="py-3 px-3">Fecha</th>
                             <th class="py-3 px-3">RIF Beneficiario</th>
                             <th class="py-3 px-4">Nombre o Razón Social</th>
+                            <th class="py-3 px-3">Factura / N° Control</th>
                             <th class="py-3 px-3">Concepto / Código</th>
+                            <th class="py-3 px-3 text-right">Monto Total</th>
                             <th class="py-3 px-3 text-right">Base Imponible</th>
-                            <th class="py-3 px-2 text-center">%</th>
+                            <th class="py-3 px-2 text-center">% Ret.</th>
                             <th class="py-3 px-3 text-right">Sustraendo</th>
                             <th class="py-3 px-4 text-right">ISLR Retenido</th>
-                            <th class="py-3 px-5 text-right">Impresión Oficial</th>
+                            <th class="py-3 px-5 text-right">Acciones / Impresión</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-200/60 font-mono">
@@ -454,29 +469,45 @@ $puedeEditar = in_array($usuarioRol, ['admin', 'contador'], true);
                                     <td class="py-3 px-3 text-slate-700"><?= e($r['fecha_emision']) ?></td>
                                     <td class="py-3 px-3 text-emerald-700 font-semibold"><?= e($r['rif_beneficiario']) ?></td>
                                     <td class="py-3 px-4 font-sans font-medium text-slate-900"><?= e($r['nombre_beneficiario']) ?></td>
+                                    <td class="py-3 px-3 text-slate-700 whitespace-nowrap">
+                                        <?= e($r['numero_factura'] ?: 'S/N') ?>
+                                        <span class="text-slate-400 block text-[10px]">Ctrl: <?= e($r['numero_control'] ?: 'S/C') ?></span>
+                                    </td>
                                     <td class="py-3 px-3 font-sans text-slate-700">
                                         <span class="font-mono text-amber-800">[<?= e($r['codigo_concepto']) ?>]</span>
                                         <?= e($r['tipo_persona']) ?>
                                     </td>
+                                    <td class="py-3 px-3 text-right text-slate-700"><?= formato_ves($r['monto_total_factura'] ?? $r['base_imponible']) ?></td>
                                     <td class="py-3 px-3 text-right text-slate-800"><?= formato_ves($r['base_imponible']) ?></td>
-                                    <td class="py-3 px-2 text-center text-slate-700"><?= number_format((float)$r['porcentaje_islr'], 0) ?>%</td>
+                                    <td class="py-3 px-2 text-center text-slate-700"><?= number_format((float)$r['porcentaje_islr'], 2, ',', '.') ?>%</td>
                                     <td class="py-3 px-3 text-right text-amber-800"><?= formato_ves($r['sustraendo'], false) ?></td>
                                     <td class="py-3 px-4 text-right font-bold text-emerald-700"><?= formato_ves($r['monto_retenido']) ?></td>
-                                    <td class="py-3 px-5 text-right">
-                                        <a href="<?= e(route_url('tributario', 'comprobanteIslr', ['id' => (int)$r['id']])) ?>"
-                                           target="_blank"
-                                           class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-sans font-semibold bg-sky-500/15 hover:bg-sky-500/25 text-sky-800 border border-sky-500/30 transition-colors">
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-                                            </svg>
-                                            Imprimir Comprobante
-                                        </a>
+                                    <td class="py-3 px-5 text-right whitespace-nowrap">
+                                        <div class="inline-flex items-center gap-1.5">
+                                            <?php if ($puedeEditar): ?>
+                                                <button type="button"
+                                                        onclick='abrirEditarRetIslr(<?= e(json_encode($r)) ?>)'
+                                                        class="px-2.5 py-1.5 rounded-lg text-xs font-sans font-medium bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 transition-colors">
+                                                    Editar
+                                                </button>
+                                                <button type="button"
+                                                        onclick="eliminarRetencion('islr', <?= (int)$r['id'] ?>, <?= e(json_encode($r['numero_comprobante'])) ?>)"
+                                                        class="px-2.5 py-1.5 rounded-lg text-xs font-sans font-medium bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition-colors">
+                                                    Eliminar
+                                                </button>
+                                            <?php endif; ?>
+                                            <a href="<?= e(route_url('tributario', 'comprobanteIslr', ['id' => (int)$r['id']])) ?>"
+                                               target="_blank"
+                                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-sans font-semibold bg-sky-500/15 hover:bg-sky-500/25 text-sky-800 border border-sky-500/30 transition-colors">
+                                                Imprimir
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="10" class="py-8 text-center font-sans text-slate-500">
+                                <td colspan="12" class="py-8 text-center font-sans text-slate-500">
                                     No se han emitido comprobantes de retención de ISLR en el período <?= e($periodo) ?>.
                                 </td>
                             </tr>
@@ -489,3 +520,225 @@ $puedeEditar = in_array($usuarioRol, ['admin', 'contador'], true);
     </section>
 
 </div>
+
+<!-- MODAL EDITAR RETENCIÓN IVA -->
+<div id="modalEditarRetIva" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+        <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-900">Modificar Retención de IVA</h3>
+            <button type="button" onclick="cerrarModalRet('modalEditarRetIva')" class="p-2 text-slate-500 hover:text-slate-900">✕</button>
+        </div>
+        <form id="formEditarRetIva" class="p-6 space-y-4">
+            <input type="hidden" id="edit_iva_id" name="id">
+            <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">N° Comprobante (14 Dígitos)</label>
+                <input type="text" id="edit_iva_num" name="numero_comprobante" required maxlength="14" pattern="\d{14}" class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs font-mono">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Fecha de Emisión</label>
+                    <input type="date" id="edit_iva_fecha" name="fecha_emision" required class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">% de Retención IVA</label>
+                    <select id="edit_iva_porc" name="porcentaje_retencion" class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs font-mono">
+                        <option value="75">75%</option>
+                        <option value="100">100%</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">RIF Proveedor</label>
+                    <input type="text" id="edit_iva_rif" name="rif_proveedor" required class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs font-mono uppercase">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Razón Social</label>
+                    <input type="text" id="edit_iva_nombre" name="nombre_proveedor" required class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-700 mb-1">Dirección del Proveedor</label>
+                <input type="text" id="edit_iva_dir" name="direccion_proveedor" class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs">
+            </div>
+            <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
+                <button type="button" onclick="cerrarModalRet('modalEditarRetIva')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-white border border-slate-300 text-slate-700">Cancelar</button>
+                <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL EDITAR RETENCIÓN ISLR -->
+<div id="modalEditarRetIslr" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+    <div class="bg-white border border-slate-200 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden">
+        <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+            <h3 class="text-base font-bold text-slate-900">Modificar Retención de ISLR</h3>
+            <button type="button" onclick="cerrarModalRet('modalEditarRetIslr')" class="p-2 text-slate-500 hover:text-slate-900">✕</button>
+        </div>
+        <form id="formEditarRetIslr" class="p-6 space-y-4">
+            <input type="hidden" id="edit_islr_id" name="id">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Fecha de Emisión</label>
+                    <input type="date" id="edit_islr_fecha" name="fecha_emision" required class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">RIF Beneficiario</label>
+                    <input type="text" id="edit_islr_rif" name="rif_beneficiario" required class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs font-mono uppercase">
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Nombre / Razón Social</label>
+                    <input type="text" id="edit_islr_nombre" name="nombre_beneficiario" required class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Correo Electrónico (SNAT/2026/00093)</label>
+                    <input type="email" id="edit_islr_email" name="email_beneficiario" required class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Tasa BCV (Bs./USD)</label>
+                    <input type="number" step="0.0001" min="0.01" id="edit_islr_tasa" name="tasa_bcv" required class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">N° Factura</label>
+                    <input type="text" id="edit_islr_fac" name="numero_factura" class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">N° Control</label>
+                    <input type="text" id="edit_islr_ctrl" name="numero_control" class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Monto Total Factura</label>
+                    <input type="number" step="0.01" min="0" id="edit_islr_total" name="monto_total_factura" class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Base Imponible</label>
+                    <input type="number" step="0.01" min="0.01" id="edit_islr_base" name="base_imponible" required class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">% Retención ISLR</label>
+                    <input type="number" step="0.01" min="0" id="edit_islr_porc" name="porcentaje_islr" required class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs font-mono">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Tipo Persona</label>
+                    <select id="edit_islr_tipo" name="tipo_persona" class="w-full rounded-xl bg-white border border-slate-300 px-3 py-2 text-xs font-mono">
+                        <option value="PJD">PJD</option>
+                        <option value="PNR">PNR</option>
+                        <option value="PJND">PJND</option>
+                        <option value="PNNR">PNNR</option>
+                    </select>
+                </div>
+            </div>
+            <div class="pt-3 border-t border-slate-200 flex justify-end gap-2">
+                <button type="button" onclick="cerrarModalRet('modalEditarRetIslr')" class="px-4 py-2 rounded-xl text-xs font-semibold bg-white border border-slate-300 text-slate-700">Cancelar</button>
+                <button type="submit" class="px-5 py-2 rounded-xl text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+(() => {
+    const getMeta = (n) => document.querySelector(`meta[name="${n}"]`)?.getAttribute('content') || '';
+    const BASE_URL = getMeta('base-url');
+    const CSRF     = getMeta('csrf-token');
+
+    window.cerrarModalRet = (id) => {
+        const el = document.getElementById(id);
+        el.classList.add('hidden');
+        el.classList.remove('flex');
+    };
+
+    window.abrirEditarRetIva = (ri) => {
+        document.getElementById('edit_iva_id').value = ri.id;
+        document.getElementById('edit_iva_num').value = ri.numero_comprobante || '';
+        document.getElementById('edit_iva_fecha').value = ri.fecha_emision || '';
+        document.getElementById('edit_iva_porc').value = String(parseInt(ri.porcentaje_retencion || 75, 10));
+        document.getElementById('edit_iva_rif').value = ri.rif_proveedor || '';
+        document.getElementById('edit_iva_nombre').value = ri.nombre_proveedor || '';
+        document.getElementById('edit_iva_dir').value = ri.direccion_proveedor || '';
+        const m = document.getElementById('modalEditarRetIva');
+        m.classList.remove('hidden'); m.classList.add('flex');
+    };
+
+    window.abrirEditarRetIslr = (r) => {
+        document.getElementById('edit_islr_id').value = r.id;
+        document.getElementById('edit_islr_fecha').value = r.fecha_emision || '';
+        document.getElementById('edit_islr_rif').value = r.rif_beneficiario || '';
+        document.getElementById('edit_islr_nombre').value = r.nombre_beneficiario || '';
+        document.getElementById('edit_islr_email').value = r.email_beneficiario || '';
+        document.getElementById('edit_islr_tasa').value = r.tasa_bcv || '1.0000';
+        document.getElementById('edit_islr_fac').value = r.numero_factura || '';
+        document.getElementById('edit_islr_ctrl').value = r.numero_control || '';
+        document.getElementById('edit_islr_total').value = r.monto_total_factura || r.base_imponible || '0.00';
+        document.getElementById('edit_islr_base').value = r.base_imponible || '0.00';
+        document.getElementById('edit_islr_porc').value = r.porcentaje_islr || '5.00';
+        document.getElementById('edit_islr_tipo').value = r.tipo_persona || 'PJD';
+        const m = document.getElementById('modalEditarRetIslr');
+        m.classList.remove('hidden'); m.classList.add('flex');
+    };
+
+    async function enviarEdicion(url, form) {
+        const res = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
+            body: JSON.stringify(Object.fromEntries(new FormData(form).entries()))
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) throw new Error(data.message || 'Error al actualizar.');
+        return data;
+    }
+
+    document.getElementById('formEditarRetIva')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            const res = await enviarEdicion(`${BASE_URL}/index.php?c=tributario&a=actualizarRetencionIva`, e.target);
+            cerrarModalRet('modalEditarRetIva');
+            await Swal.fire({ icon: 'success', title: 'Actualizado', text: res.message });
+            window.location.reload();
+        } catch (err) {
+            Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+        }
+    });
+
+    document.getElementById('formEditarRetIslr')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        try {
+            const res = await enviarEdicion(`${BASE_URL}/index.php?c=tributario&a=actualizarRetencionIslr`, e.target);
+            cerrarModalRet('modalEditarRetIslr');
+            await Swal.fire({ icon: 'success', title: 'Actualizado', text: res.message });
+            window.location.reload();
+        } catch (err) {
+            Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+        }
+    });
+
+    window.eliminarRetencion = async (tipo, id, numero) => {
+        const conf = await Swal.fire({
+            icon: 'warning',
+            title: '¿Eliminar comprobante?',
+            text: `Se eliminará el comprobante N° ${numero}. Esta acción no se puede deshacer.`,
+            showCancelButton: true,
+            confirmButtonColor: '#be123c',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+        if (!conf.isConfirmed) return;
+
+        const accion = tipo === 'iva' ? 'eliminarRetencionIva' : 'eliminarRetencionIslr';
+        try {
+            const res = await fetch(`${BASE_URL}/index.php?c=tributario&a=${accion}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
+                body: JSON.stringify({ id })
+            });
+            const data = await res.json();
+            if (!res.ok || !data.ok) throw new Error(data.message || 'No se pudo eliminar.');
+            await Swal.fire({ icon: 'success', title: 'Eliminado', text: data.message, timer: 1400, showConfirmButton: false });
+            window.location.reload();
+        } catch (err) {
+            Swal.fire({ icon: 'error', title: 'Error', text: err.message });
+        }
+    };
+})();
+</script>

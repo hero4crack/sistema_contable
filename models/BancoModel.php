@@ -988,6 +988,47 @@ final class BancoModel
         return $row ?: null;
     }
 
+    public function listarConciliaciones(int $empresaId): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT cb_conc.*, cb.banco_nombre, cb.numero_cuenta, cb.moneda
+             FROM conciliaciones_bancarias cb_conc
+             INNER JOIN cuentas_bancarias cb
+                ON cb.id = cb_conc.cuenta_bancaria_id
+               AND cb.empresa_id = cb_conc.empresa_id
+             WHERE cb_conc.empresa_id = :empresa_id
+             ORDER BY cb_conc.periodo DESC, cb_conc.updated_at DESC'
+        );
+        $stmt->execute([':empresa_id' => $empresaId]);
+        return $stmt->fetchAll();
+    }
+
+    public function eliminarConciliacion(int $empresaId, int $id): bool
+    {
+        $stmt = $this->db->prepare(
+            'SELECT id FROM conciliaciones_bancarias
+             WHERE id = :id AND empresa_id = :empresa_id
+             LIMIT 1'
+        );
+        $stmt->execute([
+            ':id'         => $id,
+            ':empresa_id' => $empresaId,
+        ]);
+        if (!$stmt->fetch()) {
+            throw new RuntimeException('La conciliación bancaria no fue encontrada.');
+        }
+
+        $del = $this->db->prepare(
+            'DELETE FROM conciliaciones_bancarias
+             WHERE id = :id AND empresa_id = :empresa_id'
+        );
+        $del->execute([
+            ':id'         => $id,
+            ':empresa_id' => $empresaId,
+        ]);
+        return $del->rowCount() > 0;
+    }
+
     public function guardarConciliacion(int $empresaId, array $datos): int
     {
         $cuentaId        = (int)($datos['cuenta_bancaria_id'] ?? 0);

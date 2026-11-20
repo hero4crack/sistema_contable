@@ -368,6 +368,41 @@ final class ContabilidadController extends Controller
         ]);
     }
 
+    public function estadosPrint(): void
+    {
+        $this->requireAuth();
+
+        $empresaId = Session::getEmpresaActivaId();
+        $empresaModel = new EmpresaModel();
+        $empresaActiva = $empresaModel->obtenerPorId($empresaId);
+
+        if (!$empresaActiva) {
+            $this->redirect('empresa', 'index');
+        }
+
+        $periodoActivo = (string)($empresaActiva['periodo_fiscal_activo'] ?? date('Y-m'));
+        $primerDiaPeriodo = $periodoActivo . '-01';
+        $ultimoDiaPeriodo = date('Y-m-t', strtotime($primerDiaPeriodo));
+
+        $fechaDesde = isset($_GET['fecha_desde']) && $_GET['fecha_desde'] !== '' ? trim((string)$_GET['fecha_desde']) : $primerDiaPeriodo;
+        $fechaHasta = isset($_GET['fecha_hasta']) && $_GET['fecha_hasta'] !== '' ? trim((string)$_GET['fecha_hasta']) : $ultimoDiaPeriodo;
+        $tabActiva  = isset($_GET['tab']) && in_array($_GET['tab'], ['comprobacion', 'resultados', 'general'], true)
+            ? (string)$_GET['tab']
+            : 'comprobacion';
+
+        $asientoModel = new AsientoModel();
+        $estados = $asientoModel->obtenerEstadosFinancieros($empresaId, $fechaDesde, $fechaHasta);
+
+        $this->render('contabilidad/estados_print', [
+            'empresa'       => $empresaActiva,
+            'empresaActiva' => $empresaActiva,
+            'estados'       => $estados,
+            'fechaDesde'    => $fechaDesde,
+            'fechaHasta'    => $fechaHasta,
+            'tabActiva'     => $tabActiva,
+        ], false);
+    }
+
     /**
      * Exporta el Libro Diario a formato CSV compatible con Microsoft Excel (UTF-8 con BOM)
      */

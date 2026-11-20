@@ -203,6 +203,17 @@ if ($inicialesEmpresa === '') {
                                 </div>
                             </a>
                         </li>
+                        <li>
+                            <a href="<?= e(route_url('deberes', 'index')) ?>"
+                               class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'deberes' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
+                                <div class="flex items-center gap-3">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'deberes' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    <span class="sidebar-text">Deberes Formales (Alertas)</span>
+                                </div>
+                            </a>
+                        </li>
                     </ul>
                 </div>
 
@@ -288,6 +299,18 @@ if ($inicialesEmpresa === '') {
                                         <span class="sidebar-text">Respaldo Base de Datos</span>
                                     </div>
                                     <span class="sidebar-badge text-[10px] font-mono px-1.5 py-0.5 rounded <?= $moduloActual === 'respaldo' ? 'bg-emerald-800 text-emerald-100' : 'bg-amber-50 text-amber-700 border border-amber-200' ?>">Admin</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<?= e(route_url('auditoria', 'index')) ?>"
+                                   class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'auditoria' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
+                                    <div class="flex items-center gap-3">
+                                        <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'auditoria' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                        </svg>
+                                        <span class="sidebar-text">Auditoría del Sistema</span>
+                                    </div>
+                                    <span class="sidebar-badge text-[10px] font-mono px-1.5 py-0.5 rounded <?= $moduloActual === 'auditoria' ? 'bg-emerald-800 text-emerald-100' : 'bg-amber-50 text-amber-700 border border-amber-200' ?>">Admin</span>
                                 </a>
                             </li>
                         <?php endif; ?>

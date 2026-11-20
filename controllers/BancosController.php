@@ -408,17 +408,20 @@ final class BancosController extends Controller
             $conciliacionActual = $bancoModel->obtenerConciliacion($empresaId, (int)$cuentaSeleccionada['id'], $periodo);
         }
 
+        $historialConciliaciones = $bancoModel->listarConciliaciones($empresaId);
+
         $this->render('bancos/conciliar', [
-            'tituloPagina'       => 'Conciliación Bancaria | ' . APP_NAME,
-            'moduloActivo'       => 'bancos_conciliar',
-            'cuentas'            => $cuentas,
-            'cuentaSeleccionada' => $cuentaSeleccionada,
-            'periodo'            => $periodo,
-            'movimientosBanco'   => $movimientosBanco,
-            'movimientosLibro'   => $movimientosLibro,
-            'saldoBanco'         => $saldoBanco,
-            'saldoLibros'        => $saldoLibros,
-            'conciliacionActual' => $conciliacionActual,
+            'tituloPagina'            => 'Conciliación Bancaria | ' . APP_NAME,
+            'moduloActivo'            => 'bancos_conciliar',
+            'cuentas'                 => $cuentas,
+            'cuentaSeleccionada'      => $cuentaSeleccionada,
+            'periodo'                 => $periodo,
+            'movimientosBanco'        => $movimientosBanco,
+            'movimientosLibro'        => $movimientosLibro,
+            'saldoBanco'              => $saldoBanco,
+            'saldoLibros'             => $saldoLibros,
+            'conciliacionActual'      => $conciliacionActual,
+            'historialConciliaciones' => $historialConciliaciones,
         ]);
     }
 
@@ -496,6 +499,35 @@ final class BancosController extends Controller
         }
     }
 
+    public function eliminarConciliacion(): void
+    {
+        $this->requireAuth();
+        $this->requireRole(['admin', 'contador']);
+        $this->requirePost();
+        $this->requireCsrf();
+
+        $empresaId = $this->requireEmpresaActiva();
+        $payload   = $this->getJsonInput();
+        if (empty($payload)) {
+            $payload = $_POST;
+        }
+
+        try {
+            $id = (int)($payload['id'] ?? 0);
+            if ($id <= 0) {
+                throw new RuntimeException('Identificador de borrador inválido.');
+            }
+            $bancoModel = new BancoModel();
+            $bancoModel->eliminarConciliacion($empresaId, $id);
+            $this->json([
+                'ok'      => true,
+                'message' => 'Conciliación bancaria eliminada correctamente.',
+            ]);
+        } catch (Throwable $e) {
+            $this->json(['ok' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
     public function conciliacionPrint(): void
     {
         $this->requireAuth();
@@ -507,12 +539,19 @@ final class BancosController extends Controller
 
         $cuentaId = (int)($_GET['cuenta_id'] ?? $_POST['cuenta_id'] ?? 0);
         $periodo  = trim((string)($_GET['periodo'] ?? $_POST['periodo'] ?? ($empresa['periodo_fiscal_activo'] ?? date('Y-m'))));
+        $formato  = (string)($_GET['formato'] ?? 'estandar');
+        if (!in_array($formato, ['estandar', 'excel'], true)) {
+            $formato = 'estandar';
+        }
 
         $cuenta = $bancoModel->obtenerCuentaPorId($cuentaId, $empresaId);
         if (!$cuenta) {
             http_response_code(404);
             exit('Cuenta bancaria no encontrada.');
         }
+
+        $periodoAnterior      = date('Y-m', strtotime($periodo . '-01 -1 month'));
+        $saldoAnteriorPeriodo = $bancoModel->calcularSaldoBancoAlCierrePeriodo($empresaId, $cuentaId, $periodoAnterior);
 
         $movimientosBanco   = $bancoModel->listarMovimientos($empresaId, $cuentaId, $periodo);
         $saldoBanco         = $bancoModel->calcularSaldoBancoAlCierrePeriodo($empresaId, $cuentaId, $periodo);
@@ -524,15 +563,17 @@ final class BancosController extends Controller
         $conciliacion = $bancoModel->obtenerConciliacion($empresaId, $cuentaId, $periodo);
 
         $this->render('bancos/conciliacion_print', [
-            'empresa'          => $empresa,
-            'empresaActiva'    => $empresa,
-            'cuenta'           => $cuenta,
-            'periodo'          => $periodo,
-            'movimientosBanco' => $movimientosBanco,
-            'movimientosLibro' => $librosData['movimientos'],
-            'saldoBanco'       => $conciliacion ? (float)$conciliacion['saldo_segun_banco'] : $saldoBanco,
-            'saldoLibros'      => $conciliacion ? (float)$conciliacion['saldo_segun_libros'] : (float)$librosData['saldo_libros'],
-            'conciliacion'     => $conciliacion,
+            'empresa'              => $empresa,
+            'empresaActiva'        => $empresa,
+            'cuenta'               => $cuenta,
+            'periodo'              => $periodo,
+            'formato'              => $formato,
+            'saldoAnteriorPeriodo' => $saldoAnteriorPeriodo,
+            'movimientosBanco'     => $movimientosBanco,
+            'movimientosLibro'     => $librosData['movimientos'],
+            'saldoBanco'           => $conciliacion ? (float)$conciliacion['saldo_segun_banco'] : $saldoBanco,
+            'saldoLibros'          => $conciliacion ? (float)$conciliacion['saldo_segun_libros'] : (float)$librosData['saldo_libros'],
+            'conciliacion'         => $conciliacion,
         ], false);
     }
 

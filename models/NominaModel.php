@@ -56,6 +56,13 @@ final class NominaModel
             $this->agregarColumnaSiNoExiste('trabajadores', 'tipo_nomina', "ENUM('QUINCENAL', 'MENSUAL', 'SEMANAL') NOT NULL DEFAULT 'QUINCENAL' AFTER `tipo_trabajador`");
             $this->agregarColumnaSiNoExiste('trabajadores', 'porcentaje_islr', 'DECIMAL(5,2) NOT NULL DEFAULT 0.00 AFTER `aplica_cestaticket`');
             $this->agregarColumnaSiNoExiste('trabajadores', 'estatus_laboral', "ENUM('ACTIVO', 'VACACIONES', 'REPOSO', 'EGRESADO') NOT NULL DEFAULT 'ACTIVO' AFTER `numero_cuenta`");
+            $this->agregarColumnaSiNoExiste('trabajadores', 'pago_movil_telefono', 'VARCHAR(25) NULL DEFAULT NULL AFTER `numero_cuenta`');
+
+            $stmtEnum = $this->db->query("SHOW COLUMNS FROM `nominas` LIKE 'tipo_frecuencia'");
+            $colInfo = $stmtEnum->fetch();
+            if ($colInfo && !str_contains((string)($colInfo['Type'] ?? ''), 'SEMANAL')) {
+                $this->db->exec("ALTER TABLE `nominas` MODIFY COLUMN `tipo_frecuencia` ENUM('PRIMERA_QUINCENA', 'SEGUNDA_QUINCENA', 'MENSUAL', 'SEMANAL', 'CESTATICKET') NOT NULL DEFAULT 'PRIMERA_QUINCENA'");
+            }
 
             // 3. Columnas adicionales en nominas
             $this->agregarColumnaSiNoExiste('nominas', 'descripcion', 'VARCHAR(200) NULL DEFAULT NULL AFTER `lunes_del_mes`');
@@ -519,6 +526,7 @@ final class NominaModel
         $porcentajeIslr  = max(0.0, min(34.0, round((float)($datos['porcentaje_islr'] ?? 0.0), 2)));
         $banco           = strtoupper(trim((string)($datos['banco'] ?? '')));
         $numeroCuenta    = preg_replace('/\s+/', '', trim((string)($datos['numero_cuenta'] ?? ''))) ?? '';
+        $pagoMovilTel    = preg_replace('/[^\d\-]/', '', trim((string)($datos['pago_movil_telefono'] ?? ''))) ?? '';
         $estatusLaboral  = strtoupper(trim((string)($datos['estatus_laboral'] ?? 'ACTIVO')));
 
         if (!preg_match('/^[VEJG]-\d{5,10}$/', $cedula)) {
@@ -584,6 +592,7 @@ final class NominaModel
                         porcentaje_islr    = :porcentaje_islr,
                         banco              = :banco,
                         numero_cuenta      = :numero_cuenta,
+                        pago_movil_telefono = :pago_movil_telefono,
                         estatus_laboral    = :estatus_laboral,
                         activo             = :activo
                     WHERE id = :id AND empresa_id = :empresa_id';
@@ -608,8 +617,9 @@ final class NominaModel
                 ':aplica_faov'     => $aplicaFaov,
                 ':aplica_cest'     => $aplicaCest,
                 ':porcentaje_islr' => $porcentajeIslr,
-                ':banco'           => $banco !== '' ? $banco : null,
-                ':numero_cuenta'   => $numeroCuenta !== '' ? $numeroCuenta : null,
+                ':banco'               => $banco !== '' ? $banco : null,
+                ':numero_cuenta'       => $numeroCuenta !== '' ? $numeroCuenta : null,
+                ':pago_movil_telefono' => $pagoMovilTel !== '' ? $pagoMovilTel : null,
                 ':estatus_laboral' => $estatusLaboral,
                 ':activo'          => $activo,
                 ':id'              => $id,
@@ -623,12 +633,12 @@ final class NominaModel
                     empresa_id, cedula, nombres, apellidos, telefono, email, fecha_nacimiento,
                     cargo, departamento, tipo_trabajador, tipo_nomina, fecha_ingreso, fecha_egreso,
                     salario_mensual, aplica_sso, aplica_rpe, aplica_faov, aplica_cestaticket,
-                    porcentaje_islr, banco, numero_cuenta, estatus_laboral, activo
+                    porcentaje_islr, banco, numero_cuenta, pago_movil_telefono, estatus_laboral, activo
                 ) VALUES (
                     :empresa_id, :cedula, :nombres, :apellidos, :telefono, :email, :fecha_nac,
                     :cargo, :departamento, :tipo_trabajador, :tipo_nomina, :fecha_ingreso, :fecha_egreso,
                     :salario_mensual, :aplica_sso, :aplica_rpe, :aplica_faov, :aplica_cest,
-                    :porcentaje_islr, :banco, :numero_cuenta, :estatus_laboral, :activo
+                    :porcentaje_islr, :banco, :numero_cuenta, :pago_movil_telefono, :estatus_laboral, :activo
                 )';
 
         $stmt = $this->db->prepare($sql);
@@ -652,8 +662,9 @@ final class NominaModel
             ':aplica_faov'     => $aplicaFaov,
             ':aplica_cest'     => $aplicaCest,
             ':porcentaje_islr' => $porcentajeIslr,
-            ':banco'           => $banco !== '' ? $banco : null,
-            ':numero_cuenta'   => $numeroCuenta !== '' ? $numeroCuenta : null,
+            ':banco'               => $banco !== '' ? $banco : null,
+            ':numero_cuenta'       => $numeroCuenta !== '' ? $numeroCuenta : null,
+            ':pago_movil_telefono' => $pagoMovilTel !== '' ? $pagoMovilTel : null,
             ':estatus_laboral' => $estatusLaboral,
             ':activo'          => $activo,
         ]);
@@ -928,6 +939,7 @@ final class NominaModel
         $sufijo = match ($tipoFrecuencia) {
             'PRIMERA_QUINCENA' => 'Q1',
             'SEGUNDA_QUINCENA' => 'Q2',
+            'SEMANAL'          => 'SEM',
             'MENSUAL'          => 'MEN',
             default            => 'LOT',
         };
@@ -973,7 +985,7 @@ final class NominaModel
             throw new RuntimeException('El lote de nómina debe incluir al menos un trabajador.');
         }
 
-        if (!in_array($tipoFrecuencia, ['PRIMERA_QUINCENA', 'SEGUNDA_QUINCENA', 'MENSUAL', 'CESTATICKET'], true)) {
+        if (!in_array($tipoFrecuencia, ['PRIMERA_QUINCENA', 'SEGUNDA_QUINCENA', 'MENSUAL', 'SEMANAL', 'CESTATICKET'], true)) {
             $tipoFrecuencia = 'PRIMERA_QUINCENA';
         }
 

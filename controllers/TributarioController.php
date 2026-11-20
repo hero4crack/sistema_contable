@@ -373,6 +373,130 @@ final class TributarioController extends Controller
         ], false);
     }
 
+    public function librosPrint(): void
+    {
+        $this->requireAuth();
+        $empresaId     = Session::getEmpresaActivaId();
+        $empresaModel  = new EmpresaModel();
+        $empresaActiva = $empresaModel->obtenerPorId($empresaId);
+
+        if (!$empresaActiva) {
+            $this->redirect('empresa', 'index');
+        }
+
+        $periodo = isset($_GET['periodo']) && preg_match('/^\d{4}-(0[1-9]|1[0-2])$/', (string)$_GET['periodo'])
+            ? (string)$_GET['periodo']
+            : (string)$empresaActiva['periodo_fiscal_activo'];
+        $tab = isset($_GET['tab']) && in_array($_GET['tab'], ['compras', 'ventas'], true)
+            ? (string)$_GET['tab']
+            : 'compras';
+
+        $tributarioModel = new TributarioModel();
+        $libroCompras    = $tributarioModel->listarLibroCompras($empresaId, $periodo);
+        $libroVentas     = $tributarioModel->listarLibroVentas($empresaId, $periodo);
+
+        $this->render('tributario/libros_print', [
+            'empresa'       => $empresaActiva,
+            'empresaActiva' => $empresaActiva,
+            'periodo'       => $periodo,
+            'tab'           => $tab,
+            'libroCompras'  => $libroCompras,
+            'libroVentas'   => $libroVentas,
+        ], false);
+    }
+
+    public function actualizarRetencionIva(): void
+    {
+        $this->requireAuth();
+        $this->requireRole(['admin', 'contador']);
+        $this->requirePost();
+        $this->requireCsrf();
+
+        $empresaId = Session::getEmpresaActivaId();
+        $payload   = $this->getJsonInput();
+        if (empty($payload)) {
+            $payload = $_POST;
+        }
+        $id = (int)($payload['id'] ?? 0);
+
+        try {
+            $tributarioModel = new TributarioModel();
+            $res = $tributarioModel->actualizarRetencionIva($id, $empresaId, $payload);
+            $this->json([
+                'ok'      => true,
+                'message' => 'Comprobante de Retención IVA actualizado (Retenido: ' . formato_ves($res['monto_iva_retenido']) . ').',
+            ]);
+        } catch (Throwable $e) {
+            $this->json(['ok' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
+    public function actualizarRetencionIslr(): void
+    {
+        $this->requireAuth();
+        $this->requireRole(['admin', 'contador']);
+        $this->requirePost();
+        $this->requireCsrf();
+
+        $empresaId = Session::getEmpresaActivaId();
+        $payload   = $this->getJsonInput();
+        if (empty($payload)) {
+            $payload = $_POST;
+        }
+        $id = (int)($payload['id'] ?? 0);
+
+        try {
+            $tributarioModel = new TributarioModel();
+            $res = $tributarioModel->actualizarRetencionIslr($id, $empresaId, $payload);
+            $this->json([
+                'ok'      => true,
+                'message' => 'Comprobante de Retención ISLR actualizado (Retenido: ' . formato_ves($res['monto_retenido']) . ').',
+            ]);
+        } catch (Throwable $e) {
+            $this->json(['ok' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
+    public function eliminarRetencionIva(): void
+    {
+        $this->requireAuth();
+        $this->requireRole(['admin', 'contador']);
+        $this->requirePost();
+        $this->requireCsrf();
+
+        $empresaId = Session::getEmpresaActivaId();
+        $payload   = $this->getJsonInput();
+        $id        = (int)($payload['id'] ?? $_POST['id'] ?? 0);
+
+        try {
+            $tributarioModel = new TributarioModel();
+            $tributarioModel->eliminarRetencionIva($id, $empresaId);
+            $this->json(['ok' => true, 'message' => 'Comprobante de Retención de IVA eliminado correctamente.']);
+        } catch (Throwable $e) {
+            $this->json(['ok' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
+    public function eliminarRetencionIslr(): void
+    {
+        $this->requireAuth();
+        $this->requireRole(['admin', 'contador']);
+        $this->requirePost();
+        $this->requireCsrf();
+
+        $empresaId = Session::getEmpresaActivaId();
+        $payload   = $this->getJsonInput();
+        $id        = (int)($payload['id'] ?? $_POST['id'] ?? 0);
+
+        try {
+            $tributarioModel = new TributarioModel();
+            $tributarioModel->eliminarRetencionIslr($id, $empresaId);
+            $this->json(['ok' => true, 'message' => 'Comprobante de Retención de ISLR eliminado correctamente.']);
+        } catch (Throwable $e) {
+            $this->json(['ok' => false, 'message' => $e->getMessage()], 422);
+        }
+    }
+
     /**
      * Exporta el Libro de Compras + Resumen Artículo 72 a CSV/Excel
      */

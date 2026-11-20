@@ -130,6 +130,33 @@ final class NominaController extends Controller
         ]);
     }
 
+    public function cestaticketPrint(): void
+    {
+        $this->requireAuth();
+
+        $empresaId     = Session::getEmpresaActivaId();
+        $empresaModel  = new EmpresaModel();
+        $empresaActiva = $empresaModel->obtenerPorId($empresaId);
+
+        if (!$empresaActiva) {
+            $this->redirect('empresa', 'index');
+        }
+
+        $loteId           = (int)($_GET['lote_id'] ?? 0);
+        $nominaModel      = new NominaModel();
+        $loteSeleccionado = $nominaModel->obtenerLoteCestaticket($empresaId, $loteId);
+
+        if (!$loteSeleccionado) {
+            $this->redirect('nomina', 'cestaticket');
+        }
+
+        $this->render('nomina/cestaticket_print', [
+            'empresa'          => $empresaActiva,
+            'empresaActiva'    => $empresaActiva,
+            'loteSeleccionado' => $loteSeleccionado,
+        ], false);
+    }
+
     /**
      * Submódulo: Emisión de Recibos de Pago Individuales y Masivos (?c=nomina&a=recibos)
      */
@@ -175,6 +202,36 @@ final class NominaController extends Controller
      * Vista de Impresión Legal de Recibos de Pago (Individual o Masivo de Nómina / Cestaticket)
      * (?c=nomina&a=reciboPrint&detalle_id=X | &nomina_id=X | &cestaticket_detalle_id=X | &cestaticket_lote_id=X)
      */
+    public function sabanaPrint(): void
+    {
+        $this->requireAuth();
+
+        $empresaId     = Session::getEmpresaActivaId();
+        $empresaModel  = new EmpresaModel();
+        $empresaActiva = $empresaModel->obtenerPorId($empresaId);
+
+        if (!$empresaActiva) {
+            $this->redirect('empresa', 'index');
+        }
+
+        $nominaId  = (int)($_GET['nomina_id'] ?? 0);
+        $detalleId = (int)($_GET['detalle_id'] ?? 0);
+
+        $nominaModel      = new NominaModel();
+        $loteSeleccionado = $nominaModel->obtenerNominaConDetalles($empresaId, $nominaId);
+
+        if (!$loteSeleccionado) {
+            $this->redirect('nomina', 'index');
+        }
+
+        $this->render('nomina/sabana_print', [
+            'empresa'          => $empresaActiva,
+            'empresaActiva'    => $empresaActiva,
+            'loteSeleccionado' => $loteSeleccionado,
+            'detalleId'        => $detalleId,
+        ], false);
+    }
+
     public function reciboPrint(): void
     {
         $this->requireAuth();

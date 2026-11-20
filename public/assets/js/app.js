@@ -801,6 +801,13 @@
             url.searchParams.set('tab', tab);
             linkCsv.href = url.toString();
         }
+
+        const linkPrint = document.getElementById('linkImprimirEstados');
+        if (linkPrint) {
+            const urlP = new URL(linkPrint.href, window.location.origin);
+            urlP.searchParams.set('tab', tab);
+            linkPrint.href = urlP.toString();
+        }
     }
 
     function notificarFase(nombreModulo, numeroFase) {
@@ -865,6 +872,13 @@
             const url = new URL(linkCsv.href, window.location.origin);
             url.searchParams.set('libro', tab);
             linkCsv.href = url.toString();
+        }
+
+        const linkPrint = document.getElementById('linkImprimirLibros');
+        if (linkPrint && (tab === 'compras' || tab === 'ventas')) {
+            const urlP = new URL(linkPrint.href, window.location.origin);
+            urlP.searchParams.set('tab', tab);
+            linkPrint.href = urlP.toString();
         }
     }
 
@@ -1445,6 +1459,7 @@
                     estatus_laboral: document.getElementById('trab_estatus_laboral')?.value || 'ACTIVO',
                     banco: document.getElementById('trab_banco')?.value || '',
                     numero_cuenta: document.getElementById('trab_numero_cuenta')?.value || '',
+                    pago_movil_telefono: document.getElementById('trab_pago_movil')?.value || '',
                     porcentaje_islr: parseFloat(document.getElementById('trab_porcentaje_islr')?.value || '0') || 0,
                     aplica_sso: document.getElementById('trab_aplica_sso')?.checked ? 1 : 0,
                     aplica_rpe: document.getElementById('trab_aplica_rpe')?.checked ? 1 : 0,
@@ -1776,6 +1791,8 @@
                 document.getElementById('trab_estatus_laboral').value = t.estatus_laboral || 'ACTIVO';
                 document.getElementById('trab_banco').value = t.banco || '';
                 document.getElementById('trab_numero_cuenta').value = t.numero_cuenta || '';
+                const elPm = document.getElementById('trab_pago_movil');
+                if (elPm) elPm.value = t.pago_movil_telefono || '';
                 document.getElementById('trab_porcentaje_islr').value = t.porcentaje_islr || '0.00';
                 document.getElementById('trab_aplica_sso').checked = Number(t.aplica_sso) === 1;
                 document.getElementById('trab_aplica_rpe').checked = Number(t.aplica_rpe) === 1;
@@ -1838,6 +1855,10 @@
                 if (inpDesde) inpDesde.value = `${periodo}-16`;
                 if (inpHasta) inpHasta.value = `${periodo}-30`;
                 if (inpDesc) inpDesc.value = `Nómina 2da Quincena ${periodo}`;
+            } else if (frec === 'SEMANAL') {
+                if (inpDesde) inpDesde.value = `${periodo}-01`;
+                if (inpHasta) inpHasta.value = `${periodo}-07`;
+                if (inpDesc) inpDesc.value = `Nómina Semanal ${periodo}`;
             } else {
                 if (inpDesde) inpDesde.value = `${periodo}-01`;
                 if (inpHasta) inpHasta.value = `${periodo}-30`;
@@ -1845,8 +1866,8 @@
             }
         }
 
-        const habilesDef = frec === 'MENSUAL' ? 22 : 11;
-        const descansoDef = frec === 'MENSUAL' ? 8 : 4;
+        const habilesDef = frec === 'MENSUAL' ? 22 : (frec === 'SEMANAL' ? 5 : 11);
+        const descansoDef = frec === 'MENSUAL' ? 8 : (frec === 'SEMANAL' ? 2 : 4);
 
         document.querySelectorAll('#tablaPreNomina tbody tr.fila-prenomina').forEach((tr) => {
             const inpH = tr.querySelector('.inp-dias-habiles');
@@ -1868,7 +1889,7 @@
         const cfg = obtenerConfigNominaDOM();
         const frec = document.getElementById('nom_frecuencia')?.value || 'PRIMERA_QUINCENA';
         const lunesMes = parseInt(document.getElementById('nom_lunes_mes')?.value || '4', 10) || 4;
-        const factorPeriodoSso = frec === 'MENSUAL' ? 1.0 : 0.5;
+        const factorPeriodoSso = frec === 'MENSUAL' ? 1.0 : (frec === 'SEMANAL' ? (1 / Math.max(4, lunesMes)) : 0.5);
 
         const salarioMensual = parseFloat(tr.getAttribute('data-salario-mensual') || '0') || 0;
         const sueldoDiario = parseFloat(tr.getAttribute('data-sueldo-diario') || '0') || 0;

@@ -1200,6 +1200,239 @@ final class TributarioModel
         return $row ?: null;
     }
 
+    /**
+     * Modifica un comprobante de Retención de IVA existente (fecha y porcentaje)
+     */
+    public function actualizarRetencionIva(int $id, int $empresaId, array $datos): array
+    {
+        $stmt = $this->db->prepare(
+            'SELECT * FROM retenciones_iva WHERE id = :id AND empresa_id = :empresa_id LIMIT 1'
+        );
+        $stmt->execute([':id' => $id, ':empresa_id' => $empresaId]);
+        $actual = $stmt->fetch();
+        if (!$actual) {
+            throw new RuntimeException('Comprobante de Retención de IVA no encontrado.');
+        }
+
+        $numComp      = trim((string)($datos['numero_comprobante'] ?? $actual['numero_comprobante']));
+        $fechaEmision = trim((string)($datos['fecha_emision'] ?? $actual['fecha_emision']));
+        $rifProv      = strtoupper(trim((string)($datos['rif_proveedor'] ?? $actual['rif_proveedor'])));
+        $nombreProv   = trim((string)($datos['nombre_proveedor'] ?? $actual['nombre_proveedor']));
+        $porcRet      = round((float)($datos['porcentaje_retencion'] ?? $actual['porcentaje_retencion']), 2);
+        $dirProv      = trim((string)($datos['direccion_proveedor'] ?? $actual['direccion_proveedor']));
+
+        if (!preg_match('/^\d{14}$/', $numComp)) {
+            throw new RuntimeException('El N° de Comprobante debe tener exactamente 14 dígitos numéricos (AAAAMM00000001).');
+        }
+        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaEmision)) {
+            throw new RuntimeException('Fecha de emisión inválida.');
+        }
+        if (!in_array((int)$porcRet, [75, 100], true)) {
+            throw new RuntimeException('El porcentaje de retención de IVA debe ser 75% o 100%.');
+        }
+
+        $stmtDup = $this->db->prepare(
+            'SELECT id FROM retenciones_iva WHERE empresa_id = :emp AND numero_comprobante = :num AND id <> :id LIMIT 1'
+        );
+        $stmtDup->execute([':emp' => $empresaId, ':num' => $numComp, ':id' => $id]);
+        if ($stmtDup->fetchColumn()) {
+            throw new RuntimeException('Ya existe otro comprobante de retención IVA con ese número.');
+        }
+
+        $montoIvaCausado  = (float)$actual['monto_iva_causado'];
+        $montoIvaRetenido = round($montoIvaCausado * ($porcRet / 100), 2);
+
+        $this->db->beginTransaction();
+        try {
+            $stmtUpd = $this->db->prepare(
+                'UPDATE retenciones_iva
+                 SET numero_comprobante = :num_comp,
+                     fecha_emision = :fecha,
+                     rif_proveedor = :rif,
+                     nombre_proveedor = :nombre,
+                     direccion_proveedor = :dir,
+                     porcentaje_retencion = :porc,
+                     monto_iva_retenido = :ret
+                 WHERE id = :id AND empresa_id = :empresa_id'
+            );
+            $stmtUpd->execute([
+                ':num_comp'   => $numComp,
+                ':fecha'      => $fechaEmision,
+                ':rif'        => $rifProv,
+                ':nombre'     => $nombreProv,
+                ':dir'        => $dirProv !== '' ? $dirProv : null,
+                ':porc'       => $porcRet,
+                ':ret'        => $montoIvaRetenido,
+                ':id'         => $id,
+                ':empresa_id' => $empresaId,
+            ]);
+
+            // Sincronizar facturas asociadas en libro_compras
+            $stmtLc = $this->db->prepare(
+                'SELECT id, monto_iva_general, monto_iva_reducida, monto_iva_adicional
+                 FROM libro_compras
+                 WHERE retencion_iva_id = :ret_id AND empresa_id = :empresa_id'
+            );
+            $stmtLc->execute([':ret_id' => $id, ':empresa_id' => $empresaId]);
+            $stmtUpdLc = $this->db->prepare(
+                'UPDATE libro_compras
+                 SET porcentaje_retencion_iva = :porc, monto_iva_retenido = :ret
+                 WHERE id = :id AND empresa_id = :empresa_id'
+            );
+            foreach ($stmtLc->fetchAll() as $lc) {
+                $ivaFac = (float)$lc['monto_iva_general'] + (float)$lc['monto_iva_reducida'] + (float)$lc['monto_iva_adicional'];
+                $stmtUpdLc->execute([
+                    ':porc'       => $porcRet,
+                    ':ret'        => round($ivaFac * ($porcRet / 100), 2),
+                    ':id'         => (int)$lc['id'],
+                    ':empresa_id' => $empresaId,
+                ]);
+            }
+
+            $this->db->commit();
+            return ['monto_iva_retenido' => $montoIvaRetenido];
+        } catch (Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Modifica un comprobante de Retención de ISLR existente recalculando sustraendo y monto retenido
+     */
+    public function actualizarRetencionIslr(int $id, int $empresaId, array $datos): array
+    {
+        $actual = $this->obtenerComprobanteIslr($id, $empresaId);
+        if (!$actual) {
+            throw new RuntimeException('Comprobante de Retención de ISLR no encontrado.');
+        }
+
+        $cfg = $this->obtenerConfiguracionFiscal($empresaId);
+
+        $fechaEmision   = trim((string)($datos['fecha_emision'] ?? $actual['fecha_emision']));
+        $rifBenef       = strtoupper(trim((string)($datos['rif_beneficiario'] ?? $actual['rif_beneficiario'])));
+        $nombreBenef    = trim((string)($datos['nombre_beneficiario'] ?? $actual['nombre_beneficiario']));
+        $emailBenef     = trim((string)($datos['email_beneficiario'] ?? ($actual['email_beneficiario'] ?? '')));
+        $dirBenef       = trim((string)($datos['direccion_beneficiario'] ?? ($actual['direccion_beneficiario'] ?? '')));
+        $tasaBcv        = round((float)($datos['tasa_bcv'] ?? ($actual['tasa_bcv'] ?? 1.0000)), 4);
+        $tipoPersona    = strtoupper(trim((string)($datos['tipo_persona'] ?? $actual['tipo_persona'])));
+        $numFactura     = trim((string)($datos['numero_factura'] ?? ($actual['numero_factura'] ?? '')));
+        $numControl     = trim((string)($datos['numero_control'] ?? ($actual['numero_control'] ?? '')));
+        $montoTotal     = round((float)($datos['monto_total_factura'] ?? $actual['monto_total_factura']), 2);
+        $baseImponible  = round((float)($datos['base_imponible'] ?? $actual['base_imponible']), 2);
+        $porcentajeIslr = round((float)($datos['porcentaje_islr'] ?? $actual['porcentaje_islr']), 2);
+
+        if (!preg_match('/^[VEJGP]-\d{8}-\d$/', $rifBenef)) {
+            throw new RuntimeException('El RIF del beneficiario debe tener el formato SENIAT (Ej: J-40206401-2).');
+        }
+        if ($emailBenef === '' || !filter_var($emailBenef, FILTER_VALIDATE_EMAIL)) {
+            throw new RuntimeException('El correo electrónico válido del sujeto retenido es obligatorio (SNAT/2026/00093).');
+        }
+        if ($nombreBenef === '' || $baseImponible <= 0) {
+            throw new RuntimeException('Nombre del beneficiario y Base Imponible (> 0) son obligatorios.');
+        }
+        if ($tasaBcv <= 0) {
+            $tasaBcv = 1.0000;
+        }
+
+        $sustraendo = 0.00;
+        if ($tipoPersona === 'PNR') {
+            $sustraendo = round((float)$cfg['valor_unidad_tributaria'] * (float)$cfg['factor_sustraendo_islr'] * ($porcentajeIslr / 100), 2);
+        }
+        $montoRetenido = max(0.00, round(($baseImponible * ($porcentajeIslr / 100)) - $sustraendo, 2));
+
+        $stmt = $this->db->prepare(
+            'UPDATE retenciones_islr
+             SET fecha_emision = :fecha,
+                 rif_beneficiario = :rif,
+                 nombre_beneficiario = :nombre,
+                 email_beneficiario = :email,
+                 direccion_beneficiario = :dir,
+                 tasa_bcv = :tasa_bcv,
+                 tipo_persona = :tipo_persona,
+                 numero_factura = :num_fac,
+                 numero_control = :num_ctrl,
+                 monto_total_factura = :monto_total,
+                 base_imponible = :base,
+                 porcentaje_islr = :porc,
+                 sustraendo = :sustraendo,
+                 monto_retenido = :retenido
+             WHERE id = :id AND empresa_id = :empresa_id'
+        );
+        $stmt->execute([
+            ':fecha'        => $fechaEmision,
+            ':rif'          => $rifBenef,
+            ':nombre'       => $nombreBenef,
+            ':email'        => $emailBenef,
+            ':dir'          => $dirBenef ?: null,
+            ':tasa_bcv'     => $tasaBcv,
+            ':tipo_persona' => in_array($tipoPersona, ['PNR', 'PNNR', 'PJD', 'PJND'], true) ? $tipoPersona : 'PJD',
+            ':num_fac'      => $numFactura ?: null,
+            ':num_ctrl'     => $numControl ?: null,
+            ':monto_total'  => $montoTotal > 0 ? $montoTotal : $baseImponible,
+            ':base'         => $baseImponible,
+            ':porc'         => $porcentajeIslr,
+            ':sustraendo'   => $sustraendo,
+            ':retenido'     => $montoRetenido,
+            ':id'           => $id,
+            ':empresa_id'   => $empresaId,
+        ]);
+
+        return ['sustraendo' => $sustraendo, 'monto_retenido' => $montoRetenido];
+    }
+
+    /**
+     * Elimina un comprobante de Retención de IVA y desvincula las facturas en Libro de Compras
+     */
+    public function eliminarRetencionIva(int $id, int $empresaId): void
+    {
+        $stmtChk = $this->db->prepare(
+            'SELECT id FROM retenciones_iva WHERE id = :id AND empresa_id = :empresa_id LIMIT 1'
+        );
+        $stmtChk->execute([':id' => $id, ':empresa_id' => $empresaId]);
+        if (!$stmtChk->fetchColumn()) {
+            throw new RuntimeException('Comprobante de Retención de IVA no encontrado.');
+        }
+
+        $this->db->beginTransaction();
+        try {
+            $stmtUnlink = $this->db->prepare(
+                'UPDATE libro_compras
+                 SET retencion_iva_id = NULL, monto_iva_retenido = 0.00
+                 WHERE retencion_iva_id = :ret_id AND empresa_id = :empresa_id'
+            );
+            $stmtUnlink->execute([':ret_id' => $id, ':empresa_id' => $empresaId]);
+
+            $stmtDel = $this->db->prepare(
+                'DELETE FROM retenciones_iva WHERE id = :id AND empresa_id = :empresa_id'
+            );
+            $stmtDel->execute([':id' => $id, ':empresa_id' => $empresaId]);
+
+            $this->db->commit();
+        } catch (Throwable $e) {
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            throw $e;
+        }
+    }
+
+    /**
+     * Elimina un comprobante de Retención de ISLR
+     */
+    public function eliminarRetencionIslr(int $id, int $empresaId): void
+    {
+        $stmtDel = $this->db->prepare(
+            'DELETE FROM retenciones_islr WHERE id = :id AND empresa_id = :empresa_id'
+        );
+        $stmtDel->execute([':id' => $id, ':empresa_id' => $empresaId]);
+        if ($stmtDel->rowCount() === 0) {
+            throw new RuntimeException('Comprobante de Retención de ISLR no encontrado.');
+        }
+    }
+
     // =========================================================================
     // SECCIÓN 4: GENERACIÓN AUTOMÁTICA DE ASIENTOS CONTABLES DESDE FACTURAS
     // =========================================================================

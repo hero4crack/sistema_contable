@@ -13,10 +13,11 @@ $folioStr   = str_pad((string)($folio ?? 1), 4, '0', STR_PAD_LEFT);
     <title>Libro Mayor Oficial — <?= e((string)$empresa['razon_social']) ?></title>
     <script src="<?= e(base_url('assets/vendor/tailwind/tailwindcss.js')) ?>"></script>
     <style>
+        @page { margin: 0mm; }
         @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .no-print { display: none !important; }
-            body { background: #ffffff !important; color: #000000 !important; padding: 0 !important; }
+            body { background: #ffffff !important; color: #000000 !important; padding: 8mm !important; }
             .hoja-contable { box-shadow: none !important; border: none !important; margin: 0 !important; max-width: 100% !important; }
         }
         body {

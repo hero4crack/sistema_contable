@@ -53,13 +53,18 @@ $tab = $tabActiva ?? 'comprobacion';
                 Exportar Reporte Actual (CSV/Excel)
             </a>
 
-            <button type="button" onclick="window.print()"
-                    class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-950/40 transition-colors">
+            <a id="linkImprimirEstados"
+               href="<?= e(route_url('contabilidad', 'estadosPrint', [
+                'tab'         => $tab,
+                'fecha_desde' => $fechaDesde,
+                'fecha_hasta' => $fechaHasta,
+            ])) ?>" target="_blank"
+               class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-emerald-700 hover:bg-emerald-800 text-white shadow-sm transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                 </svg>
                 Vista de Impresión Oficial
-            </button>
+            </a>
         </div>
     </div>
 

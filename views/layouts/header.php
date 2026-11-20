@@ -145,9 +145,10 @@ $empresaActivaRetIva  = (string)($empresaActiva['porcentaje_retencion_iva'] ?? S
         .bg-amber-600 * { color: #ffffff !important; }
 
         /* Impresión Oficial Limpia */
+        @page { margin: 0mm; }
         @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            body, html, main { background: #ffffff !important; color: #000000 !important; overflow: visible !important; height: auto !important; }
+            body, html, main { background: #ffffff !important; color: #000000 !important; overflow: visible !important; height: auto !important; padding: 8mm !important; }
             #appSidebar, header, footer, .no-print { display: none !important; }
             .flex.h-screen.w-screen { display: block !important; height: auto !important; width: 100% !important; overflow: visible !important; }
             .flex-1.flex.flex-col.h-screen { display: block !important; height: auto !important; overflow: visible !important; }
