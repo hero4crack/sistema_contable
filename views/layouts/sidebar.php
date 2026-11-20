@@ -64,7 +64,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('dashboard', 'index')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'dashboard' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'dashboard' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'dashboard' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                                     </svg>
                                     <span class="sidebar-text">Dashboard Fiscal</span>
@@ -76,7 +76,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('empresa', 'index')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'empresas' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'empresas' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'empresas' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                                     </svg>
                                     <span class="sidebar-text">Empresas Clientes</span>
@@ -99,7 +99,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('plan_cuentas', 'index')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'plan_cuentas' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'plan_cuentas' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'plan_cuentas' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                     </svg>
                                     <span class="sidebar-text">Plan de Cuentas</span>
@@ -110,7 +110,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('contabilidad', 'diario')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'diario' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'diario' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'diario' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                                     </svg>
                                     <span class="sidebar-text">Libro Diario y Asientos</span>
@@ -121,7 +121,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('contabilidad', 'mayor')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'mayor' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'mayor' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'mayor' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
                                     </svg>
                                     <span class="sidebar-text">Libro Mayor Analítico</span>
@@ -132,7 +132,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('contabilidad', 'estados')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'estados' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'estados' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'estados' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                                     </svg>
                                     <span class="sidebar-text">Estados Financieros</span>
@@ -143,7 +143,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('bancos', 'index')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'bancos_index' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'bancos_index' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'bancos_index' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11m16-11v11M8 14v3m4-3v3m4-3v3"/>
                                     </svg>
                                     <span class="sidebar-text">Enlace Bancario</span>
@@ -154,7 +154,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('bancos', 'conciliar')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'bancos_conciliar' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'bancos_conciliar' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'bancos_conciliar' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                     <span class="sidebar-text">Conciliación Bancaria</span>
@@ -174,7 +174,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('tributario', 'libros')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'tributario_libros' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'tributario_libros' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'tributario_libros' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
                                     </svg>
                                     <span class="sidebar-text">Libros Compras y Ventas</span>
@@ -185,7 +185,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('tributario', 'retenciones')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'tributario_retenciones' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'tributario_retenciones' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'tributario_retenciones' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z"/>
                                     </svg>
                                     <span class="sidebar-text">Retenciones IVA / ISLR</span>
@@ -205,7 +205,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('nomina', 'trabajadores')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'nomina_trabajadores' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'nomina_trabajadores' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'nomina_trabajadores' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                                     </svg>
                                     <span class="sidebar-text">Directorio Trabajadores</span>
@@ -216,7 +216,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('nomina', 'index')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'nomina_index' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'nomina_index' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'nomina_index' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                                     </svg>
                                     <span class="sidebar-text">Nómina Quincenal / Mes</span>
@@ -227,7 +227,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('nomina', 'cestaticket')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'nomina_cestaticket' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'nomina_cestaticket' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'nomina_cestaticket' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                     <span class="sidebar-text">Bono de Alimentación</span>
@@ -238,7 +238,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('nomina', 'recibos')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'nomina_recibos' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'nomina_recibos' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'nomina_recibos' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                                     </svg>
                                     <span class="sidebar-text">Recibos de Pago LOTTT</span>
@@ -259,7 +259,7 @@ if ($inicialesEmpresa === '') {
                                 <a href="<?= e(route_url('usuarios', 'index')) ?>"
                                    class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'usuarios' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                     <div class="flex items-center gap-3">
-                                        <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'usuarios' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'usuarios' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                                         </svg>
                                         <span class="sidebar-text">Usuarios y Permisos</span>
@@ -271,7 +271,7 @@ if ($inicialesEmpresa === '') {
                                 <a href="<?= e(route_url('respaldo', 'index')) ?>"
                                    class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'respaldo' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                     <div class="flex items-center gap-3">
-                                        <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'respaldo' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'respaldo' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
                                         </svg>
                                         <span class="sidebar-text">Respaldo Base de Datos</span>
@@ -284,7 +284,7 @@ if ($inicialesEmpresa === '') {
                             <a href="<?= e(route_url('manual', 'index')) ?>"
                                class="sidebar-item flex items-center justify-between px-3 py-2 rounded-xl text-sm font-medium transition-all <?= $moduloActual === 'manual' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-800' ?>">
                                 <div class="flex items-center gap-3">
-                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'manual' ? 'text-white' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 shrink-0 <?= $moduloActual === 'manual' ? 'text-slate-900' : 'text-slate-400' ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                                     </svg>
                                     <span class="sidebar-text">Manual de Usuario</span>

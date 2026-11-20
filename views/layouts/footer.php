@@ -7,7 +7,7 @@ declare(strict_types=1);
         <footer class="h-9 bg-white border-t border-slate-200 px-6 flex items-center justify-between text-[11px] text-slate-500 shrink-0">
             <div class="flex items-center gap-4">
                 <span><strong class="text-slate-800"><?= e(APP_NAME) ?></strong> — <?= e(APP_SUBTITLE) ?></span>
-                <span class="hidden md:inline text-slate-300">|</span>
+                <span class="hidden md:inline text-slate-700">|</span>
                 <span class="hidden md:inline font-mono font-semibold text-emerald-700">Arquitectura Multi-Tenant (Filtro estricto por empresa_id)</span>
             </div>
             <div class="font-mono text-slate-500">

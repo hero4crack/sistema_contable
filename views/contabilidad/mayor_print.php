@@ -40,9 +40,9 @@ $folioStr   = str_pad((string)($folio ?? 1), 4, '0', STR_PAD_LEFT);
 <body class="py-6 px-4">
 
     <!-- Barra de Control Superior (No se imprime) -->
-    <div class="max-w-5xl mx-auto mb-6 bg-slate-900 text-white rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg no-print">
+    <div class="max-w-5xl mx-auto mb-6 bg-white text-slate-900 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg no-print">
         <div>
-            <span class="text-[11px] font-mono uppercase text-emerald-400 block">Formato Oficial Registro Mercantil (Hojas Foliadas)</span>
+            <span class="text-[11px] font-mono uppercase text-emerald-700 block">Formato Oficial Registro Mercantil (Hojas Foliadas)</span>
             <h1 class="text-sm font-bold">
                 <?= $esTabla
                     ? 'Modelo 2: Libro Mayor en Cuadro Fiscal (Estilo Inversiones Charq\'Carnes)'
@@ -59,7 +59,7 @@ $folioStr   = str_pad((string)($folio ?? 1), 4, '0', STR_PAD_LEFT);
                 'agrupar_mes' => '1',
                 'folio'       => $folio,
             ])) ?>"
-               class="px-3 py-1.5 rounded-xl text-xs font-semibold transition <?= (!$esTabla && $esResumido) ? 'bg-emerald-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-200 hover:bg-slate-700' ?>">
+               class="px-3 py-1.5 rounded-xl text-xs font-semibold transition <?= (!$esTabla && $esResumido) ? 'bg-emerald-500 text-slate-950 font-bold' : 'bg-slate-100 text-slate-800 hover:bg-slate-200' ?>">
                 Mayor Resumido por Mes (Folio)
             </a>
 
@@ -71,7 +71,7 @@ $folioStr   = str_pad((string)($folio ?? 1), 4, '0', STR_PAD_LEFT);
                 'agrupar_mes' => '0',
                 'folio'       => $folio,
             ])) ?>"
-               class="px-3 py-1.5 rounded-xl text-xs font-semibold transition <?= (!$esTabla && !$esResumido) ? 'bg-emerald-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-200 hover:bg-slate-700' ?>">
+               class="px-3 py-1.5 rounded-xl text-xs font-semibold transition <?= (!$esTabla && !$esResumido) ? 'bg-emerald-500 text-slate-950 font-bold' : 'bg-slate-100 text-slate-800 hover:bg-slate-200' ?>">
                 Mayor Analítico Detallado (Folio)
             </a>
 
@@ -82,7 +82,7 @@ $folioStr   = str_pad((string)($folio ?? 1), 4, '0', STR_PAD_LEFT);
                 'formato'     => 'tabla',
                 'folio'       => $folio,
             ])) ?>"
-               class="px-3 py-1.5 rounded-xl text-xs font-semibold transition <?= $esTabla ? 'bg-emerald-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-200 hover:bg-slate-700' ?>">
+               class="px-3 py-1.5 rounded-xl text-xs font-semibold transition <?= $esTabla ? 'bg-emerald-500 text-slate-950 font-bold' : 'bg-slate-100 text-slate-800 hover:bg-slate-200' ?>">
                 Libro Mayor (Tabla Mercantil)
             </a>
 
@@ -91,7 +91,7 @@ $folioStr   = str_pad((string)($folio ?? 1), 4, '0', STR_PAD_LEFT);
                 Imprimir / PDF
             </button>
             <button type="button" onclick="window.close()"
-                    class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300">
+                    class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700">
                 Cerrar
             </button>
         </div>

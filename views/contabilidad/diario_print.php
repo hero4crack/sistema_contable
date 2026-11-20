@@ -55,9 +55,9 @@ $diferencia = round(abs($sumaTotalDebe - $sumaTotalHaber), 2);
 <body class="py-6 px-4">
 
     <!-- Barra de Control Superior (No se imprime) -->
-    <div class="max-w-5xl mx-auto mb-6 bg-slate-900 text-white rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg no-print">
+    <div class="max-w-5xl mx-auto mb-6 bg-white text-slate-900 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg no-print">
         <div>
-            <span class="text-[11px] font-mono uppercase text-emerald-400 block">Formato Oficial Registro Mercantil (Hojas Foliadas)</span>
+            <span class="text-[11px] font-mono uppercase text-emerald-700 block">Formato Oficial Registro Mercantil (Hojas Foliadas)</span>
             <h1 class="text-sm font-bold">
                 <?= $esResumen ? 'Modelo 1: Resumen de Diario por Cuenta (Estilo Clásico Foliado)' : 'Modelo 2: Libro Diario Legal Detallado (Estilo Cuadro Registro Mercantil)' ?>
             </h1>
@@ -65,11 +65,11 @@ $diferencia = round(abs($sumaTotalDebe - $sumaTotalHaber), 2);
 
         <div class="flex flex-wrap items-center gap-2">
             <a href="<?= e(route_url('contabilidad', 'diarioPrint', ['fecha_desde' => $fechaDesde, 'fecha_hasta' => $fechaHasta, 'formato' => 'detallado', 'folio' => $folio])) ?>"
-               class="px-3 py-1.5 rounded-xl text-xs font-semibold transition <?= !$esResumen ? 'bg-emerald-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-200 hover:bg-slate-700' ?>">
+               class="px-3 py-1.5 rounded-xl text-xs font-semibold transition <?= !$esResumen ? 'bg-emerald-500 text-slate-950 font-bold' : 'bg-slate-100 text-slate-800 hover:bg-slate-200' ?>">
                 Formato Libro Diario (Tabla)
             </a>
             <a href="<?= e(route_url('contabilidad', 'diarioPrint', ['fecha_desde' => $fechaDesde, 'fecha_hasta' => $fechaHasta, 'formato' => 'resumen', 'folio' => $folio])) ?>"
-               class="px-3 py-1.5 rounded-xl text-xs font-semibold transition <?= $esResumen ? 'bg-emerald-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-200 hover:bg-slate-700' ?>">
+               class="px-3 py-1.5 rounded-xl text-xs font-semibold transition <?= $esResumen ? 'bg-emerald-500 text-slate-950 font-bold' : 'bg-slate-100 text-slate-800 hover:bg-slate-200' ?>">
                 Formato Resumen de Diario (Folio)
             </a>
             <button type="button" onclick="window.print()"
@@ -77,7 +77,7 @@ $diferencia = round(abs($sumaTotalDebe - $sumaTotalHaber), 2);
                 Imprimir / PDF
             </button>
             <button type="button" onclick="window.close()"
-                    class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-300">
+                    class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700">
                 Cerrar
             </button>
         </div>

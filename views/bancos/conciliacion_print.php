@@ -192,11 +192,11 @@ $pendientesBanco = array_values(array_filter($movimientosBanco ?? [], static fn(
 
         <!-- Firmas -->
         <div class="grid grid-cols-2 gap-12 pt-10 text-center">
-            <div class="border-t border-slate-700 pt-2">
+            <div class="border-t border-slate-300 pt-2">
                 <p class="font-bold uppercase text-[11px]">ELABORADO POR (CONTABILIDAD)</p>
                 <p class="text-[10px] text-slate-500">Firma y Sello</p>
             </div>
-            <div class="border-t border-slate-700 pt-2">
+            <div class="border-t border-slate-300 pt-2">
                 <p class="font-bold uppercase text-[11px]">REVISADO Y APROBADO POR (GERENCIA / ADMINISTRACIÓN)</p>
                 <p class="text-[10px] text-slate-500"><?= e((string)$emp['razon_social']) ?></p>
             </div>

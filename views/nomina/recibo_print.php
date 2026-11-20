@@ -30,9 +30,9 @@ $tituloDoc     = $esCestaticket
 <body class="py-6 px-4">
 
     <!-- Barra Superior de Impresión -->
-    <div class="max-w-4xl mx-auto mb-6 bg-slate-900 text-white rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg no-print">
+    <div class="max-w-4xl mx-auto mb-6 bg-white text-slate-900 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg no-print">
         <div>
-            <span class="text-xs font-mono uppercase text-emerald-400 block">Vista Oficial de Impresión LOTTT</span>
+            <span class="text-xs font-mono uppercase text-emerald-700 block">Vista Oficial de Impresión LOTTT</span>
             <h1 class="text-sm font-bold"><?= e($tituloDoc) ?> (<?= count($recibos) ?> <?= count($recibos) === 1 ? 'recibo' : 'recibos' ?>)</h1>
         </div>
         <div class="flex items-center gap-2">
@@ -41,7 +41,7 @@ $tituloDoc     = $esCestaticket
                 Imprimir / Guardar como PDF
             </button>
             <button type="button" onclick="window.close()"
-                    class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 transition">
+                    class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 transition">
                 Cerrar Ventana
             </button>
         </div>
@@ -53,7 +53,7 @@ $tituloDoc     = $esCestaticket
             <?php
             $esUltimo = ($idx === count($recibos) - 1);
             ?>
-            <div class="bg-white border-2 border-slate-800 rounded-xl p-6 shadow-sm <?= !$esUltimo ? 'page-break' : '' ?>">
+            <div class="bg-white border-2 border-slate-200 rounded-xl p-6 shadow-sm <?= !$esUltimo ? 'page-break' : '' ?>">
                 <?php
                 $tituloReporte = $esCestaticket ? 'RECIBO DE CESTATICKET SOCIALISTA' : 'RECIBO DE PAGO DE NÓMINA (LOTTT)';
                 $subtituloPeriodo = 'Lote: ' . (string)($esCestaticket ? $r['codigo_lote'] : $r['codigo_nomina']) . ' • Período: ' . (string)($r['periodo'] ?? '');
@@ -99,98 +99,98 @@ $tituloDoc     = $esCestaticket
                         </div>
                     </div>
 
-                    <table class="w-full text-left border-collapse border border-slate-800 text-xs mb-3">
+                    <table class="w-full text-left border-collapse border border-slate-200 text-xs mb-3">
                         <thead>
-                            <tr class="bg-slate-200 border-b border-slate-800 text-[11px] font-bold uppercase">
-                                <th class="py-2 px-2.5 border-r border-slate-800 w-16">Cód.</th>
-                                <th class="py-2 px-2.5 border-r border-slate-800">Descripción del Concepto</th>
-                                <th class="py-2 px-2.5 border-r border-slate-800 text-center w-24">Cant. / %</th>
-                                <th class="py-2 px-2.5 border-r border-slate-800 text-right w-36">Asignaciones (Bs.)</th>
+                            <tr class="bg-slate-200 border-b border-slate-200 text-[11px] font-bold uppercase">
+                                <th class="py-2 px-2.5 border-r border-slate-200 w-16">Cód.</th>
+                                <th class="py-2 px-2.5 border-r border-slate-200">Descripción del Concepto</th>
+                                <th class="py-2 px-2.5 border-r border-slate-200 text-center w-24">Cant. / %</th>
+                                <th class="py-2 px-2.5 border-r border-slate-200 text-right w-36">Asignaciones (Bs.)</th>
                                 <th class="py-2 px-2.5 text-right w-36">Deducciones (Bs.)</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-300 font-mono text-xs">
                             <tr>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800">A-01</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 font-sans font-medium">Días Hábiles Trabajados</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 text-center"><?= number_format((float)$r['dias_habiles'], 1, ',', '.') ?> días</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 text-right"><?= number_format((float)$r['monto_dias_habiles'], 2, ',', '.') ?></td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200">A-01</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 font-sans font-medium">Días Hábiles Trabajados</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 text-center"><?= number_format((float)$r['dias_habiles'], 1, ',', '.') ?> días</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 text-right"><?= number_format((float)$r['monto_dias_habiles'], 2, ',', '.') ?></td>
                                 <td class="py-1.5 px-2.5 text-right">-</td>
                             </tr>
                             <tr>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800">A-02</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 font-sans font-medium">Días de Descanso Remunerado (Sáb/Dom)</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 text-center"><?= number_format((float)$r['dias_descanso'], 1, ',', '.') ?> días</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 text-right"><?= number_format((float)$r['monto_dias_descanso'], 2, ',', '.') ?></td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200">A-02</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 font-sans font-medium">Días de Descanso Remunerado (Sáb/Dom)</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 text-center"><?= number_format((float)$r['dias_descanso'], 1, ',', '.') ?> días</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 text-right"><?= number_format((float)$r['monto_dias_descanso'], 2, ',', '.') ?></td>
                                 <td class="py-1.5 px-2.5 text-right">-</td>
                             </tr>
                             <?php if ((float)$r['dias_feriados'] > 0): ?>
                                 <tr>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800">A-03</td>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800 font-sans font-medium">Días Feriados Remunerados</td>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800 text-center"><?= number_format((float)$r['dias_feriados'], 1, ',', '.') ?> días</td>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800 text-right"><?= number_format((float)$r['monto_dias_feriados'], 2, ',', '.') ?></td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200">A-03</td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200 font-sans font-medium">Días Feriados Remunerados</td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200 text-center"><?= number_format((float)$r['dias_feriados'], 1, ',', '.') ?> días</td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200 text-right"><?= number_format((float)$r['monto_dias_feriados'], 2, ',', '.') ?></td>
                                     <td class="py-1.5 px-2.5 text-right">-</td>
                                 </tr>
                             <?php endif; ?>
                             <?php if ((float)$r['horas_extras'] > 0): ?>
                                 <tr>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800">A-04</td>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800 font-sans font-medium">Horas Extras / Recargos LOTTT</td>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800 text-center">Período</td>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800 text-right"><?= number_format((float)$r['horas_extras'], 2, ',', '.') ?></td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200">A-04</td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200 font-sans font-medium">Horas Extras / Recargos LOTTT</td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200 text-center">Período</td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200 text-right"><?= number_format((float)$r['horas_extras'], 2, ',', '.') ?></td>
                                     <td class="py-1.5 px-2.5 text-right">-</td>
                                 </tr>
                             <?php endif; ?>
                             <?php if ((float)$r['bonificaciones'] > 0): ?>
                                 <tr>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800">A-05</td>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800 font-sans font-medium">Bono de Producción / Bonificaciones</td>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800 text-center">Período</td>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800 text-right"><?= number_format((float)$r['bonificaciones'], 2, ',', '.') ?></td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200">A-05</td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200 font-sans font-medium">Bono de Producción / Bonificaciones</td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200 text-center">Período</td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200 text-right"><?= number_format((float)$r['bonificaciones'], 2, ',', '.') ?></td>
                                     <td class="py-1.5 px-2.5 text-right">-</td>
                                 </tr>
                             <?php endif; ?>
 
                             <!-- Deducciones -->
                             <tr>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800">D-01</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 font-sans font-medium">Retención Seguro Social Obligatorio (IVSS)</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 text-center"><?= e((string)$config['porcentaje_sso_empleado']) ?>%</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 text-right">-</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200">D-01</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 font-sans font-medium">Retención Seguro Social Obligatorio (IVSS)</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 text-center"><?= e((string)$config['porcentaje_sso_empleado']) ?>%</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 text-right">-</td>
                                 <td class="py-1.5 px-2.5 text-right"><?= number_format((float)$r['retencion_sso'], 2, ',', '.') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800">D-02</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 font-sans font-medium">Retención Régimen Prestacional de Empleo (RPE)</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 text-center"><?= e((string)$config['porcentaje_rpe_empleado']) ?>%</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 text-right">-</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200">D-02</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 font-sans font-medium">Retención Régimen Prestacional de Empleo (RPE)</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 text-center"><?= e((string)$config['porcentaje_rpe_empleado']) ?>%</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 text-right">-</td>
                                 <td class="py-1.5 px-2.5 text-right"><?= number_format((float)$r['retencion_rpe'], 2, ',', '.') ?></td>
                             </tr>
                             <tr>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800">D-03</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 font-sans font-medium">Retención Ahorro Habitacional (FAOV / Banavih)</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 text-center"><?= e((string)$config['porcentaje_faov_empleado']) ?>%</td>
-                                <td class="py-1.5 px-2.5 border-r border-slate-800 text-right">-</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200">D-03</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 font-sans font-medium">Retención Ahorro Habitacional (FAOV / Banavih)</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 text-center"><?= e((string)$config['porcentaje_faov_empleado']) ?>%</td>
+                                <td class="py-1.5 px-2.5 border-r border-slate-200 text-right">-</td>
                                 <td class="py-1.5 px-2.5 text-right"><?= number_format((float)$r['retencion_faov'], 2, ',', '.') ?></td>
                             </tr>
                             <?php if (((float)$r['retencion_islr'] + (float)$r['otras_deducciones']) > 0): ?>
                                 <tr>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800">D-04</td>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800 font-sans font-medium">Retención ISLR / Otras Deducciones</td>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800 text-center">Período</td>
-                                    <td class="py-1.5 px-2.5 border-r border-slate-800 text-right">-</td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200">D-04</td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200 font-sans font-medium">Retención ISLR / Otras Deducciones</td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200 text-center">Período</td>
+                                    <td class="py-1.5 px-2.5 border-r border-slate-200 text-right">-</td>
                                     <td class="py-1.5 px-2.5 text-right"><?= number_format((float)$r['retencion_islr'] + (float)$r['otras_deducciones'], 2, ',', '.') ?></td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
                         <tfoot>
-                            <tr class="bg-slate-100 border-t-2 border-slate-800 font-mono font-bold text-xs">
-                                <td colspan="3" class="py-2 px-2.5 border-r border-slate-800 text-right uppercase">Subtotales del Período:</td>
-                                <td class="py-2 px-2.5 border-r border-slate-800 text-right"><?= e(formato_ves((float)$r['total_asignaciones'])) ?></td>
+                            <tr class="bg-slate-100 border-t-2 border-slate-200 font-mono font-bold text-xs">
+                                <td colspan="3" class="py-2 px-2.5 border-r border-slate-200 text-right uppercase">Subtotales del Período:</td>
+                                <td class="py-2 px-2.5 border-r border-slate-200 text-right"><?= e(formato_ves((float)$r['total_asignaciones'])) ?></td>
                                 <td class="py-2 px-2.5 text-right"><?= e(formato_ves((float)$r['total_deducciones'])) ?></td>
                             </tr>
-                            <tr class="bg-slate-900 text-white font-mono font-bold text-sm">
+                            <tr class="bg-white text-slate-900 font-mono font-bold text-sm">
                                 <td colspan="3" class="py-2.5 px-3 text-right uppercase">NETO A CANCELAR AL TRABAJADOR(A):</td>
                                 <td colspan="2" class="py-2.5 px-3 text-right text-base"><?= e(formato_ves((float)$r['neto_pagar'])) ?></td>
                             </tr>
@@ -222,24 +222,24 @@ $tituloDoc     = $esCestaticket
                         <strong>Artículo 4 Parágrafo Primero</strong> del Decreto con Rango, Valor y Fuerza de Ley del Cestaticket Socialista para los Trabajadores y Trabajadoras, sin que dicho beneficio tenga carácter salarial conforme al Artículo 7 de la referida Ley.
                     </div>
 
-                    <table class="w-full text-left border-collapse border border-slate-800 text-xs mb-4">
+                    <table class="w-full text-left border-collapse border border-slate-200 text-xs mb-4">
                         <thead>
-                            <tr class="bg-slate-200 border-b border-slate-800 text-[11px] font-bold uppercase">
-                                <th class="py-2 px-3 border-r border-slate-800">Concepto</th>
-                                <th class="py-2 px-3 border-r border-slate-800 text-center">Días Efectivos</th>
-                                <th class="py-2 px-3 border-r border-slate-800 text-right">Alícuota Diaria</th>
-                                <th class="py-2 px-3 border-r border-slate-800 text-right">Deducción Inasist.</th>
+                            <tr class="bg-slate-200 border-b border-slate-200 text-[11px] font-bold uppercase">
+                                <th class="py-2 px-3 border-r border-slate-200">Concepto</th>
+                                <th class="py-2 px-3 border-r border-slate-200 text-center">Días Efectivos</th>
+                                <th class="py-2 px-3 border-r border-slate-200 text-right">Alícuota Diaria</th>
+                                <th class="py-2 px-3 border-r border-slate-200 text-right">Deducción Inasist.</th>
                                 <th class="py-2 px-3 text-right">Total a Pagar (Bs.)</th>
                             </tr>
                         </thead>
                         <tbody class="font-mono text-xs">
                             <tr>
-                                <td class="py-2.5 px-3 border-r border-slate-800 font-sans font-semibold">
+                                <td class="py-2.5 px-3 border-r border-slate-200 font-sans font-semibold">
                                     Bono de Alimentación Mensual (Período <?= e((string)$r['periodo']) ?>)
                                 </td>
-                                <td class="py-2.5 px-3 border-r border-slate-800 text-center"><?= (float)$r['dias_efectivos'] ?> días</td>
-                                <td class="py-2.5 px-3 border-r border-slate-800 text-right"><?= e(formato_ves((float)$r['valor_diario'])) ?></td>
-                                <td class="py-2.5 px-3 border-r border-slate-800 text-right"><?= e(formato_ves((float)$r['monto_descuento'])) ?></td>
+                                <td class="py-2.5 px-3 border-r border-slate-200 text-center"><?= (float)$r['dias_efectivos'] ?> días</td>
+                                <td class="py-2.5 px-3 border-r border-slate-200 text-right"><?= e(formato_ves((float)$r['valor_diario'])) ?></td>
+                                <td class="py-2.5 px-3 border-r border-slate-200 text-right"><?= e(formato_ves((float)$r['monto_descuento'])) ?></td>
                                 <td class="py-2.5 px-3 text-right font-bold text-sm"><?= e(formato_ves((float)$r['total_cestaticket'])) ?></td>
                             </tr>
                         </tbody>
@@ -249,13 +249,13 @@ $tituloDoc     = $esCestaticket
                 <!-- Cajas de Firma, Cédula, Fecha y Huella Dactilar -->
                 <div class="grid grid-cols-3 gap-6 pt-6 mt-4 border-t border-slate-300 text-xs">
                     <div class="text-center">
-                        <div class="h-14 border-b border-slate-800 mb-1"></div>
+                        <div class="h-14 border-b border-slate-200 mb-1"></div>
                         <span class="font-bold uppercase block">Por la Empresa</span>
                         <span class="text-[10px] text-slate-600"><?= e((string)$empresa['razon_social']) ?></span>
                     </div>
 
                     <div class="text-center">
-                        <div class="h-14 border-b border-slate-800 mb-1"></div>
+                        <div class="h-14 border-b border-slate-200 mb-1"></div>
                         <span class="font-bold uppercase block">Recibí Conforme — Firma del Trabajador(a)</span>
                         <span class="text-[10px] font-mono text-slate-600"><?= e((string)$r['nombre_completo']) ?> • C.I. <?= e((string)$r['cedula']) ?></span>
                     </div>

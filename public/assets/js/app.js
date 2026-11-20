@@ -627,7 +627,7 @@
 
         if (badge) {
             if (sumaDebe === 0 && sumaHaber === 0) {
-                badge.className = 'px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold bg-slate-800 text-slate-300 border border-slate-700';
+                badge.className = 'px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold bg-slate-100 text-slate-700 border border-slate-300';
                 badge.textContent = 'INGRESE MONTOS EN DEBE Y HABER (Bs. 0,00)';
             } else if (estaCuadrado) {
                 badge.className = 'px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40';

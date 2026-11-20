@@ -23,9 +23,9 @@ $comp = $comprobante ?? [];
 <body class="bg-slate-100 text-slate-900 font-sans p-6">
 
     <!-- Barra de acciones superior -->
-    <div class="max-w-5xl mx-auto mb-5 flex items-center justify-between bg-slate-900 text-white px-5 py-3 rounded-xl shadow no-print">
+    <div class="max-w-5xl mx-auto mb-5 flex items-center justify-between bg-white text-slate-900 px-5 py-3 rounded-xl shadow no-print">
         <div class="flex items-center gap-3">
-            <span class="font-mono text-xs px-2.5 py-1 rounded bg-sky-500/20 text-sky-300 border border-sky-500/30">
+            <span class="font-mono text-xs px-2.5 py-1 rounded bg-sky-500/20 text-sky-800 border border-sky-500/30">
                 DECRETO 1.808 • ART. 24
             </span>
             <span class="text-sm font-semibold">Comprobante ISLR N° <?= e($comp['numero_comprobante'] ?? '') ?></span>
@@ -36,7 +36,7 @@ $comp = $comprobante ?? [];
                 Imprimir / Guardar PDF
             </button>
             <button type="button" onclick="window.close()"
-                    class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">
+                    class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700">
                 Cerrar Ventana
             </button>
         </div>
@@ -51,7 +51,7 @@ $comp = $comprobante ?? [];
         ?>
 
         <!-- TÍTULO Y BASE LEGAL DECRETO 1.808 -->
-        <div class="text-center border-b-2 border-slate-800 pb-4 mb-5">
+        <div class="text-center border-b-2 border-slate-200 pb-4 mb-5">
             <h1 class="text-base font-bold uppercase tracking-wide">
                 COMPROBANTE DE RETENCIÓN DE IMPUESTO SOBRE LA RENTA (I.S.L.R.)
             </h1>
@@ -131,7 +131,7 @@ $comp = $comprobante ?? [];
         </div>
 
         <!-- TABLA DE CÁLCULO DE RETENCIÓN ISLR -->
-        <table class="w-full border-collapse border border-slate-800 text-xs mb-6">
+        <table class="w-full border-collapse border border-slate-200 text-xs mb-6">
             <thead class="bg-slate-100 uppercase text-[10px]">
                 <tr>
                     <th class="border border-slate-400 py-2.5 px-3 text-center">Fecha de Pago o Abono en Cuenta</th>
@@ -190,12 +190,12 @@ $comp = $comprobante ?? [];
 
         <!-- FIRMAS Y SELLOS -->
         <div class="grid grid-cols-2 gap-12 pt-12 mt-6 text-center">
-            <div class="border-t border-slate-700 pt-2">
+            <div class="border-t border-slate-300 pt-2">
                 <p class="font-bold uppercase text-xs">ELABORADO POR (AGENTE DE RETENCIÓN):</p>
                 <p class="text-[11px] text-slate-600 mt-0.5"><?= e($emp['razon_social'] ?? '') ?> — RIF: <?= e($emp['rif'] ?? '') ?></p>
             </div>
 
-            <div class="border-t border-slate-700 pt-2">
+            <div class="border-t border-slate-300 pt-2">
                 <p class="font-bold uppercase text-xs">RECIBIDO CONFORME POR (SUJETO PASIVO):</p>
                 <p class="text-[11px] text-slate-600 mt-0.5"><?= e($comp['nombre_beneficiario'] ?? '') ?> — RIF: <?= e($comp['rif_beneficiario'] ?? '') ?></p>
             </div>

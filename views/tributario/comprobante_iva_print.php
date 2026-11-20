@@ -34,9 +34,9 @@ $totRet   = 0.0;
 <body class="bg-slate-100 text-slate-900 font-sans p-6">
 
     <!-- Barra de acciones superior (No se imprime) -->
-    <div class="max-w-6xl mx-auto mb-5 flex items-center justify-between bg-slate-900 text-white px-5 py-3 rounded-xl shadow no-print">
+    <div class="max-w-6xl mx-auto mb-5 flex items-center justify-between bg-white text-slate-900 px-5 py-3 rounded-xl shadow no-print">
         <div class="flex items-center gap-3">
-            <span class="font-mono text-xs px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+            <span class="font-mono text-xs px-2.5 py-1 rounded bg-amber-500/20 text-amber-800 border border-amber-500/30">
                 SNAT/2015/0049 • SNAT/2025/000054
             </span>
             <span class="text-sm font-semibold">Comprobante N° <?= e($comp['numero_comprobante'] ?? '') ?></span>
@@ -47,7 +47,7 @@ $totRet   = 0.0;
                 Imprimir / Guardar PDF
             </button>
             <button type="button" onclick="window.close()"
-                    class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300">
+                    class="px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700">
                 Cerrar Ventana
             </button>
         </div>
@@ -62,7 +62,7 @@ $totRet   = 0.0;
         ?>
 
         <!-- TÍTULO Y BASE LEGAL LEY DEL IVA ART. 11 -->
-        <div class="text-center border-b-2 border-slate-800 pb-4 mb-5">
+        <div class="text-center border-b-2 border-slate-200 pb-4 mb-5">
             <h1 class="text-base font-bold uppercase tracking-wide">
                 COMPROBANTE DE RETENCIÓN DEL IMPUESTO AL VALOR AGREGADO
             </h1>
@@ -89,7 +89,7 @@ $totRet   = 0.0;
                 <p class="font-mono font-bold text-sm mt-0.5"><?= e($emp['rif'] ?? '') ?></p>
             </div>
 
-            <div class="col-span-3 border-2 border-slate-800 rounded p-2.5 bg-slate-50">
+            <div class="col-span-3 border-2 border-slate-200 rounded p-2.5 bg-slate-50">
                 <span class="block text-[10px] font-bold uppercase text-slate-600">
                     Comprobante N° (14 Dígitos):
                 </span>
@@ -143,7 +143,7 @@ $totRet   = 0.0;
         </div>
 
         <!-- TABLA REGLAMENTARIA DE DOCUMENTOS RETENIDOS -->
-        <table class="w-full border-collapse border border-slate-800 text-[11px] mb-6">
+        <table class="w-full border-collapse border border-slate-200 text-[11px] mb-6">
             <thead class="bg-slate-100 uppercase text-[10px]">
                 <tr>
                     <th class="border border-slate-400 py-2 px-1.5 text-center">N°</th>
@@ -233,17 +233,17 @@ $totRet   = 0.0;
 
         <!-- RECUADROS DE FIRMAS Y CONSTANCIA DE ENTREGA -->
         <div class="grid grid-cols-3 gap-8 pt-10 mt-6 text-center">
-            <div class="border-t border-slate-700 pt-2">
+            <div class="border-t border-slate-300 pt-2">
                 <p class="font-bold uppercase text-[11px]">RECIBÍ CONFORME (SUJETO RETENIDO)</p>
                 <p class="text-[10px] text-slate-500"><?= e($comp['nombre_proveedor'] ?? '') ?></p>
             </div>
 
-            <div class="border-t border-slate-700 pt-2">
+            <div class="border-t border-slate-300 pt-2">
                 <p class="font-bold uppercase text-[11px]">FECHA DE ENTREGA: ____ / ____ / ________</p>
                 <p class="text-[10px] text-slate-500">Constancia de recepción</p>
             </div>
 
-            <div class="border-t border-slate-700 pt-2">
+            <div class="border-t border-slate-300 pt-2">
                 <p class="font-bold uppercase text-[11px]">FIRMA Y SELLO DEL AGENTE DE RETENCIÓN</p>
                 <p class="text-[10px] text-slate-500"><?= e($emp['razon_social'] ?? '') ?></p>
             </div>
