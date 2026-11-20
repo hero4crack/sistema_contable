@@ -203,6 +203,8 @@ foreach ($ventas as $vRow) {
                             <th class="py-3 px-3 min-w-[180px]">Nombre o Razón Social</th>
                             <th class="py-3 px-2.5">N° Factura</th>
                             <th class="py-3 px-2.5">N° Control</th>
+                            <th class="py-3 px-2.5">N° Nota Créd.</th>
+                            <th class="py-3 px-2.5">N° Nota Déb.</th>
                             <th class="py-3 px-2">Tipo</th>
                             <th class="py-3 px-2.5">Fact. Afect.</th>
                             <th class="py-3 px-3 text-right">Total c/IVA</th>
@@ -230,6 +232,8 @@ foreach ($ventas as $vRow) {
                                     <td class="py-2.5 px-3 font-sans font-medium text-slate-900"><?= e($c['nombre_proveedor']) ?></td>
                                     <td class="py-2.5 px-2.5 whitespace-nowrap text-slate-800"><?= e($c['numero_factura']) ?></td>
                                     <td class="py-2.5 px-2.5 whitespace-nowrap text-slate-400"><?= e($c['numero_control']) ?></td>
+                                    <td class="py-2.5 px-2.5 whitespace-nowrap text-slate-600"><?= e($c['numero_nota_credito'] ?: '—') ?></td>
+                                    <td class="py-2.5 px-2.5 whitespace-nowrap text-slate-600"><?= e($c['numero_nota_debito'] ?: '—') ?></td>
                                     <td class="py-2.5 px-2 whitespace-nowrap text-slate-700"><?= e($c['tipo_transaccion'] ?? '01-Reg') ?></td>
                                     <td class="py-2.5 px-2.5 whitespace-nowrap text-slate-400"><?= e($c['numero_factura_afectada'] ?: '—') ?></td>
                                     <td class="py-2.5 px-3 text-right font-bold text-slate-900"><?= formato_ves($c['total_compra_con_iva'], false) ?></td>
@@ -238,7 +242,9 @@ foreach ($ventas as $vRow) {
                                     <td class="py-2.5 px-3 text-right text-sky-800 font-semibold"><?= formato_ves($c['monto_iva_general'], false) ?></td>
                                     <td class="py-2.5 px-3 text-right text-slate-700"><?= formato_ves($baseOtras, false) ?></td>
                                     <td class="py-2.5 px-3 text-right text-slate-700"><?= formato_ves($ivaOtras, false) ?></td>
-                                    <td class="py-2.5 px-2.5 text-right text-slate-700"><?= formato_ves($c['monto_igtf'] ?? 0, false) ?></td>
+                                    <td class="py-2.5 px-2.5 text-right text-slate-700">
+                                        <?= (float)($c['monto_igtf'] ?? 0) != 0.0 ? formato_ves($c['monto_igtf'], false) : '<span class="text-slate-400">—</span>' ?>
+                                    </td>
                                     <td class="py-2.5 px-3 text-right font-semibold text-amber-800"><?= formato_ves($c['monto_iva_retenido'] ?? 0, false) ?></td>
                                     <td class="py-2.5 px-3 text-center whitespace-nowrap">
                                         <?php if (!empty($c['retencion_iva_id'])): ?>
@@ -255,7 +261,7 @@ foreach ($ventas as $vRow) {
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="17" class="py-10 text-center font-sans text-slate-500">
+                                <td colspan="19" class="py-10 text-center font-sans text-slate-500">
                                     No existen facturas de compra registradas para el período <?= e($periodo) ?>.
                                 </td>
                             </tr>
@@ -263,7 +269,7 @@ foreach ($ventas as $vRow) {
                     </tbody>
                     <tfoot class="bg-slate-50 border-t-2 border-emerald-500/40 font-mono font-bold text-[11px]">
                         <tr>
-                            <td colspan="8" class="py-3.5 px-3 text-right uppercase text-slate-900">TOTALES DEL LIBRO DE COMPRAS (Bs.):</td>
+                            <td colspan="10" class="py-3.5 px-3 text-right uppercase text-slate-900">TOTALES DEL LIBRO DE COMPRAS (Bs.):</td>
                             <td class="py-3.5 px-3 text-right text-emerald-700"><?= formato_ves($totC['total_con_iva'], false) ?></td>
                             <td class="py-3.5 px-3 text-right text-slate-800"><?= formato_ves($totC['exentas'], false) ?></td>
                             <td class="py-3.5 px-3 text-right text-slate-800"><?= formato_ves($totC['base_gen'], false) ?></td>
@@ -618,6 +624,18 @@ foreach ($ventas as $vRow) {
                     <input type="text" name="numero_factura_afectada" placeholder="Si es N/C o N/D"
                            class="w-full rounded-xl bg-slate-50 border border-slate-300 px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:outline-none">
                 </div>
+
+                <div class="sm:col-span-3">
+                    <label class="block text-xs font-medium text-slate-700 mb-1">N° Nota de Crédito</label>
+                    <input type="text" name="numero_nota_credito" maxlength="40" placeholder="Opcional (si aplica)"
+                           class="w-full rounded-xl bg-slate-50 border border-slate-300 px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:outline-none">
+                </div>
+
+                <div class="sm:col-span-3">
+                    <label class="block text-xs font-medium text-slate-700 mb-1">N° Nota de Débito</label>
+                    <input type="text" name="numero_nota_debito" maxlength="40" placeholder="Opcional (si aplica)"
+                           class="w-full rounded-xl bg-slate-50 border border-slate-300 px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:outline-none">
+                </div>
             </div>
 
             <!-- Desglose de Montos en Tiempo Real -->
@@ -656,9 +674,15 @@ foreach ($ventas as $vRow) {
                     </div>
 
                     <div>
-                        <label class="block text-[11px] font-medium text-slate-400 mb-1">Base IGTF Divisas (3%)</label>
-                        <input type="number" step="0.01" min="0" id="comp_base_igtf" name="base_igtf" value="0.00"
-                               class="calc-compra w-full rounded-xl bg-slate-50 border border-slate-300 px-3 py-2 text-xs font-mono text-right text-slate-900">
+                        <label class="flex items-center justify-between text-[11px] font-medium text-slate-600 mb-1 cursor-pointer">
+                            <span>Base IGTF Divisas (3%)</span>
+                            <span class="inline-flex items-center gap-1 text-emerald-700 font-semibold">
+                                <input type="checkbox" id="comp_aplica_igtf" class="calc-compra rounded border-slate-300 text-emerald-700">
+                                Aplica
+                            </span>
+                        </label>
+                        <input type="number" step="0.01" min="0" id="comp_base_igtf" name="base_igtf" value="0.00" disabled
+                               class="calc-compra w-full rounded-xl bg-slate-100 border border-slate-300 px-3 py-2 text-xs font-mono text-right text-slate-900 disabled:opacity-60">
                     </div>
 
                     <div>

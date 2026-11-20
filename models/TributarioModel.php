@@ -106,6 +106,8 @@ final class TributarioModel
         $this->agregarColumnaSiNoExiste('retenciones_iva', 'total_base_imponible', 'DECIMAL(18,2) NOT NULL DEFAULT 0.00 AFTER `total_exento`');
 
         $this->agregarColumnaSiNoExiste('retenciones_islr', 'direccion_beneficiario', 'VARCHAR(255) NULL DEFAULT NULL AFTER `nombre_beneficiario`');
+        $this->agregarColumnaSiNoExiste('retenciones_islr', 'email_beneficiario', 'VARCHAR(150) NULL DEFAULT NULL AFTER `direccion_beneficiario`');
+        $this->agregarColumnaSiNoExiste('retenciones_islr', 'tasa_bcv', 'DECIMAL(18,4) NOT NULL DEFAULT 1.0000 AFTER `email_beneficiario`');
         $this->agregarColumnaSiNoExiste('retenciones_islr', 'numero_factura', 'VARCHAR(40) NULL DEFAULT NULL AFTER `descripcion_concepto`');
         $this->agregarColumnaSiNoExiste('retenciones_islr', 'numero_control', 'VARCHAR(40) NULL DEFAULT NULL AFTER `numero_factura`');
         $this->agregarColumnaSiNoExiste('retenciones_islr', 'monto_total_factura', 'DECIMAL(18,2) NOT NULL DEFAULT 0.00 AFTER `numero_control`');
@@ -1030,11 +1032,14 @@ final class TributarioModel
     }
 
     /**
-     * Genera el correlativo secuencial de Comprobante ISLR por empresa y período
+     * Genera el correlativo secuencial de 14 dígitos (SNAT/2026/00093): AAAAMM + 8 dígitos
      */
     public function generarCorrelativoIslr(int $empresaId, string $periodo): string
     {
-        $prefijo = 'ISLR-' . str_replace('-', '', $periodo) . '-';
+        $prefijo = str_replace('-', '', $periodo);
+        if (!preg_match('/^\d{6}$/', $prefijo)) {
+            $prefijo = date('Ym');
+        }
 
         $stmt = $this->db->prepare(
             'SELECT numero_comprobante FROM retenciones_islr
@@ -1045,11 +1050,15 @@ final class TributarioModel
         $ultimo = $stmt->fetchColumn();
 
         $secuencia = 1;
-        if (is_string($ultimo) && preg_match('/-(\d+)$/', $ultimo, $m)) {
-            $secuencia = (int)$m[1] + 1;
+        if (is_string($ultimo)) {
+            if (strlen($ultimo) === 14 && ctype_digit($ultimo)) {
+                $secuencia = (int)substr($ultimo, 6) + 1;
+            } elseif (preg_match('/-(\d+)$/', $ultimo, $m)) {
+                $secuencia = (int)$m[1] + 1;
+            }
         }
 
-        return $prefijo . str_pad((string)$secuencia, 5, '0', STR_PAD_LEFT);
+        return $prefijo . str_pad((string)$secuencia, 8, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -1084,7 +1093,9 @@ final class TributarioModel
         $periodoFiscal  = trim((string)($datos['periodo_fiscal'] ?? substr($fechaEmision, 0, 7)));
         $rifBenef       = strtoupper(trim((string)($datos['rif_beneficiario'] ?? '')));
         $nombreBenef    = trim((string)($datos['nombre_beneficiario'] ?? ''));
+        $emailBenef     = trim((string)($datos['email_beneficiario'] ?? ''));
         $dirBenef       = trim((string)($datos['direccion_beneficiario'] ?? ''));
+        $tasaBcv        = round((float)($datos['tasa_bcv'] ?? 0), 4);
         $tipoPersona    = strtoupper(trim((string)($datos['tipo_persona'] ?? 'PJD')));
         $codigoConcepto = trim((string)($datos['codigo_concepto'] ?? '004-PJ'));
         $descConcepto   = trim((string)($datos['descripcion_concepto'] ?? 'Honorarios Profesionales'));
@@ -1098,6 +1109,14 @@ final class TributarioModel
 
         if (!preg_match('/^[VEJGP]-\d{8}-\d$/', $rifBenef)) {
             throw new RuntimeException('El RIF del beneficiario debe tener el formato SENIAT (Ej: J-40206401-2 o V-12345678-9).');
+        }
+
+        if ($emailBenef === '' || !filter_var($emailBenef, FILTER_VALIDATE_EMAIL)) {
+            throw new RuntimeException('Según la Providencia SNAT/2026/00093, el correo electrónico válido del sujeto retenido es obligatorio.');
+        }
+
+        if ($tasaBcv <= 0) {
+            $tasaBcv = 1.0000;
         }
 
         if ($nombreBenef === '' || $baseImponible <= 0) {
@@ -1123,13 +1142,13 @@ final class TributarioModel
 
         $sql = 'INSERT INTO retenciones_islr (
                     empresa_id, numero_comprobante, fecha_emision, periodo_fiscal,
-                    rif_beneficiario, nombre_beneficiario, direccion_beneficiario,
+                    rif_beneficiario, nombre_beneficiario, email_beneficiario, direccion_beneficiario, tasa_bcv,
                     tipo_persona, codigo_concepto, descripcion_concepto,
                     numero_factura, numero_control, monto_total_factura, monto_exento,
                     base_imponible, porcentaje_islr, sustraendo, monto_retenido, estado
                 ) VALUES (
                     :empresa_id, :numero_comprobante, :fecha_emision, :periodo_fiscal,
-                    :rif_beneficiario, :nombre_beneficiario, :direccion_beneficiario,
+                    :rif_beneficiario, :nombre_beneficiario, :email_beneficiario, :direccion_beneficiario, :tasa_bcv,
                     :tipo_persona, :codigo_concepto, :descripcion_concepto,
                     :numero_factura, :numero_control, :monto_total_factura, :monto_exento,
                     :base_imponible, :porcentaje_islr, :sustraendo, :monto_retenido, "EMITIDO"
@@ -1143,7 +1162,9 @@ final class TributarioModel
             ':periodo_fiscal'         => $periodoFiscal,
             ':rif_beneficiario'       => $rifBenef,
             ':nombre_beneficiario'    => $nombreBenef,
+            ':email_beneficiario'     => $emailBenef,
             ':direccion_beneficiario' => $dirBenef ?: null,
+            ':tasa_bcv'               => $tasaBcv,
             ':tipo_persona'           => in_array($tipoPersona, ['PNR', 'PNNR', 'PJD', 'PJND'], true) ? $tipoPersona : 'PJD',
             ':codigo_concepto'        => $codigoConcepto,
             ':descripcion_concepto'   => $descConcepto,

@@ -56,14 +56,13 @@ $comp = $comprobante ?? [];
                 COMPROBANTE DE RETENCIÓN DE IMPUESTO SOBRE LA RENTA (I.S.L.R.)
             </h1>
             <p class="text-[11px] text-slate-600 mt-1">
-                (Para dar cumplimiento a la normativa establecida en el Artículo 24 del Decreto 1.808 en materia de
-                retenciones de ISLR, publicado en Gaceta Oficial N° 36.203 de fecha 12 de mayo de 1997)
+                Emitido conforme a la <strong>Providencia Administrativa N° SNAT/2026/00093</strong> y Artículo 24 del Decreto 1.808 (Gaceta Oficial N° 36.203).
             </p>
         </div>
 
         <div class="flex justify-between items-center mb-4 font-mono text-xs">
             <div>
-                <span class="text-slate-500 uppercase font-bold">Comprobante N°:</span>
+                <span class="text-slate-500 uppercase font-bold">Comprobante N° (14 Dígitos):</span>
                 <strong class="text-sm ml-1"><?= e($comp['numero_comprobante'] ?? '') ?></strong>
             </div>
             <div>
@@ -107,9 +106,13 @@ $comp = $comprobante ?? [];
                     <span class="text-slate-500 font-semibold">R.I.F.:</span>
                     <strong class="ml-1"><?= e($comp['rif_beneficiario'] ?? '') ?></strong>
                 </div>
-                <div class="col-span-12">
+                <div class="col-span-8">
                     <span class="text-slate-500 font-semibold">DIRECCIÓN FISCAL:</span>
                     <span class="ml-1 uppercase"><?= e($comp['direccion_beneficiario'] ?: 'DOMICILIO FISCAL REGISTRADO EN FACTURA') ?></span>
+                </div>
+                <div class="col-span-4 text-right">
+                    <span class="text-slate-500 font-semibold">CORREO ELECTRÓNICO:</span>
+                    <span class="ml-1 font-mono"><?= e($comp['email_beneficiario'] ?: 'No registrado') ?></span>
                 </div>
             </div>
         </div>
@@ -187,6 +190,31 @@ $comp = $comprobante ?? [];
                 </tr>
             </tfoot>
         </table>
+
+        <!-- BLOQUE MULTIMONEDA (SNAT/2026/00093) -->
+        <?php
+        $tasaBcvComp = (float)($comp['tasa_bcv'] ?? 0);
+        if ($tasaBcvComp <= 0) {
+            $tasaBcvComp = (float)($emp['tasa_bcv_actual'] ?? 1);
+        }
+        $tasaBcvComp = max(0.0001, $tasaBcvComp);
+        $baseUsd     = round((float)($comp['base_imponible'] ?? 0) / $tasaBcvComp, 2);
+        $retUsd      = round((float)($comp['monto_retenido'] ?? 0) / $tasaBcvComp, 2);
+        ?>
+        <div class="grid grid-cols-12 gap-3 mb-6 bg-emerald-50/70 border border-emerald-300 rounded-lg p-3 text-xs">
+            <div class="col-span-4">
+                <span class="block text-[10px] font-bold uppercase text-emerald-800">Referencia Cambiaria BCV (SNAT/2026/00093)</span>
+                <p class="font-mono font-bold text-slate-900 mt-0.5">Tasa: Bs. <?= number_format($tasaBcvComp, 4, ',', '.') ?> / USD</p>
+            </div>
+            <div class="col-span-4 text-center">
+                <span class="block text-[10px] font-bold uppercase text-emerald-800">Base Imponible Referencial (USD)</span>
+                <p class="font-mono font-bold text-slate-900 mt-0.5">USD <?= number_format($baseUsd, 2, ',', '.') ?></p>
+            </div>
+            <div class="col-span-4 text-right">
+                <span class="block text-[10px] font-bold uppercase text-emerald-800">Equivalente Referencial Retenido (USD)</span>
+                <p class="font-mono font-bold text-emerald-900 text-sm mt-0.5">USD <?= number_format($retUsd, 2, ',', '.') ?></p>
+            </div>
+        </div>
 
         <!-- FIRMAS Y SELLOS -->
         <div class="grid grid-cols-2 gap-12 pt-12 mt-6 text-center">

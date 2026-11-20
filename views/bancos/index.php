@@ -373,6 +373,11 @@ $puedeEditar = in_array($usuarioRol, ['admin', 'contador'], true);
                            class="w-full rounded-xl bg-white border border-slate-300 px-3.5 py-2 text-xs font-mono text-slate-900">
                 </div>
                 <div class="sm:col-span-2">
+                    <label class="block text-xs font-medium text-slate-700 mb-1">Beneficiario / Remitente</label>
+                    <input type="text" name="beneficiario" maxlength="150" placeholder="Nombre del proveedor, cliente o trabajador"
+                           class="w-full rounded-xl bg-white border border-slate-300 px-3.5 py-2 text-xs text-slate-900">
+                </div>
+                <div class="sm:col-span-2">
                     <label class="block text-xs font-medium text-slate-700 mb-1">Tipo de Movimiento</label>
                     <select name="tipo_movimiento" class="w-full rounded-xl bg-white border border-slate-300 px-3.5 py-2 text-xs text-slate-900">
                         <?php foreach ($tiposMovimiento as $tm): ?>

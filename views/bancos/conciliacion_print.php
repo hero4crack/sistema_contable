@@ -149,6 +149,7 @@ $pendientesBanco = array_values(array_filter($movimientosBanco ?? [], static fn(
                 <thead class="bg-slate-100 text-slate-700 uppercase">
                     <tr>
                         <th class="border border-slate-300 py-1.5 px-2">Fecha</th>
+                        <th class="border border-slate-300 py-1.5 px-2">Beneficiario</th>
                         <th class="border border-slate-300 py-1.5 px-2">Referencia</th>
                         <th class="border border-slate-300 py-1.5 px-2">Tipo</th>
                         <th class="border border-slate-300 py-1.5 px-2">Descripción</th>
@@ -161,6 +162,7 @@ $pendientesBanco = array_values(array_filter($movimientosBanco ?? [], static fn(
                         <?php foreach ($pendientesBanco as $pb): ?>
                             <tr>
                                 <td class="border border-slate-300 py-1.5 px-2 font-mono"><?= e(date('d/m/Y', strtotime((string)$pb['fecha_operacion']))) ?></td>
+                                <td class="border border-slate-300 py-1.5 px-2"><?= e($pb['beneficiario'] ?: '—') ?></td>
                                 <td class="border border-slate-300 py-1.5 px-2 font-mono"><?= e($pb['referencia']) ?></td>
                                 <td class="border border-slate-300 py-1.5 px-2"><?= e($pb['tipo_movimiento']) ?></td>
                                 <td class="border border-slate-300 py-1.5 px-2"><?= e($pb['descripcion']) ?></td>
@@ -174,7 +176,7 @@ $pendientesBanco = array_values(array_filter($movimientosBanco ?? [], static fn(
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" class="border border-slate-300 py-3 text-center text-slate-500">
+                            <td colspan="7" class="border border-slate-300 py-3 text-center text-slate-500">
                                 Todas las partidas bancarias del período se encuentran conciliadas.
                             </td>
                         </tr>
@@ -191,13 +193,17 @@ $pendientesBanco = array_values(array_filter($movimientosBanco ?? [], static fn(
         <?php endif; ?>
 
         <!-- Firmas -->
-        <div class="grid grid-cols-2 gap-12 pt-10 text-center">
-            <div class="border-t border-slate-300 pt-2">
-                <p class="font-bold uppercase text-[11px]">ELABORADO POR (CONTABILIDAD)</p>
-                <p class="text-[10px] text-slate-500">Firma y Sello</p>
+        <div class="grid grid-cols-3 gap-8 pt-10 text-center">
+            <div class="border-t border-slate-400 pt-2">
+                <p class="font-bold uppercase text-[11px]">ELABORADO POR:</p>
+                <p class="text-[10px] text-slate-500">Tesorería / Administración</p>
             </div>
-            <div class="border-t border-slate-300 pt-2">
-                <p class="font-bold uppercase text-[11px]">REVISADO Y APROBADO POR (GERENCIA / ADMINISTRACIÓN)</p>
+            <div class="border-t border-slate-400 pt-2">
+                <p class="font-bold uppercase text-[11px]">CONTABILIZADO POR:</p>
+                <p class="text-[10px] text-slate-500">Contabilidad General</p>
+            </div>
+            <div class="border-t border-slate-400 pt-2">
+                <p class="font-bold uppercase text-[11px]">REVISADO Y APROBADO POR:</p>
                 <p class="text-[10px] text-slate-500"><?= e((string)$emp['razon_social']) ?></p>
             </div>
         </div>

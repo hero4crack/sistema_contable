@@ -901,11 +901,26 @@
     }
 
     function recalcularModalCompra() {
+        const chkIgtf = document.getElementById('comp_aplica_igtf');
+        const inputBaseIgtf = document.getElementById('comp_base_igtf');
+        if (chkIgtf && inputBaseIgtf) {
+            if (chkIgtf.checked) {
+                inputBaseIgtf.disabled = false;
+                inputBaseIgtf.classList.remove('bg-slate-100');
+                inputBaseIgtf.classList.add('bg-white');
+            } else {
+                inputBaseIgtf.value = '0.00';
+                inputBaseIgtf.disabled = true;
+                inputBaseIgtf.classList.add('bg-slate-100');
+                inputBaseIgtf.classList.remove('bg-white');
+            }
+        }
+
         const exentas = parseFloat(document.getElementById('comp_exentas')?.value || '0') || 0;
         const baseGen = parseFloat(document.getElementById('comp_base_gen')?.value || '0') || 0;
         const baseRed = parseFloat(document.getElementById('comp_base_red')?.value || '0') || 0;
         const baseAdi = parseFloat(document.getElementById('comp_base_adi')?.value || '0') || 0;
-        const baseIgtf = parseFloat(document.getElementById('comp_base_igtf')?.value || '0') || 0;
+        const baseIgtf = (chkIgtf && !chkIgtf.checked) ? 0 : (parseFloat(inputBaseIgtf?.value || '0') || 0);
         const porcRet = parseFloat(document.getElementById('comp_porc_ret')?.value || '0') || 0;
 
         const ivaGen = Math.round(baseGen * 16) / 100;

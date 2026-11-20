@@ -135,6 +135,11 @@ final class BancoModel
               CONSTRAINT `fk_conc_cuenta` FOREIGN KEY (`cuenta_bancaria_id`) REFERENCES `cuentas_bancarias` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
         ");
+
+        $stmtCol = $this->db->query("SHOW COLUMNS FROM `movimientos_bancarios` LIKE 'beneficiario'");
+        if (!$stmtCol->fetch()) {
+            $this->db->exec("ALTER TABLE `movimientos_bancarios` ADD COLUMN `beneficiario` VARCHAR(150) NULL DEFAULT NULL AFTER `referencia`");
+        }
     }
 
     // =========================================================================
@@ -442,6 +447,7 @@ final class BancoModel
         $cuentaId       = (int)($datos['cuenta_bancaria_id'] ?? 0);
         $fecha          = trim((string)($datos['fecha_operacion'] ?? ''));
         $referencia     = trim((string)($datos['referencia'] ?? ''));
+        $beneficiario   = trim((string)($datos['beneficiario'] ?? ''));
         $tipoMovimiento = (string)($datos['tipo_movimiento'] ?? 'Transferencia Recibida');
         $descripcion    = trim((string)($datos['descripcion'] ?? ''));
         $montoDebe      = round((float)($datos['monto_debe'] ?? 0), 2);
@@ -482,10 +488,10 @@ final class BancoModel
         try {
             $stmt = $this->db->prepare(
                 'INSERT INTO movimientos_bancarios
-                    (empresa_id, cuenta_bancaria_id, fecha_operacion, referencia, tipo_movimiento,
+                    (empresa_id, cuenta_bancaria_id, fecha_operacion, referencia, beneficiario, tipo_movimiento,
                      descripcion, monto_debe, monto_haber, conciliado, asiento_id, periodo_conciliacion)
                  VALUES
-                    (:empresa_id, :cuenta_bancaria_id, :fecha_operacion, :referencia, :tipo_movimiento,
+                    (:empresa_id, :cuenta_bancaria_id, :fecha_operacion, :referencia, :beneficiario, :tipo_movimiento,
                      :descripcion, :monto_debe, :monto_haber, 0, NULL, :periodo)'
             );
             $stmt->execute([
@@ -493,6 +499,7 @@ final class BancoModel
                 ':cuenta_bancaria_id' => $cuentaId,
                 ':fecha_operacion'    => $fecha,
                 ':referencia'         => $referencia,
+                ':beneficiario'       => $beneficiario !== '' ? $beneficiario : null,
                 ':tipo_movimiento'    => $tipoMovimiento,
                 ':descripcion'        => $descripcion,
                 ':monto_debe'         => $montoDebe,

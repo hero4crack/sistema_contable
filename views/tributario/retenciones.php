@@ -316,10 +316,23 @@ $puedeEditar = in_array($usuarioRol, ['admin', 'contador'], true);
                                    class="w-full rounded-xl bg-slate-50 border border-slate-300 px-3.5 py-2 text-xs text-slate-900">
                         </div>
 
-                        <div class="sm:col-span-8">
+                        <div class="sm:col-span-6">
                             <label class="block text-xs font-medium text-slate-700 mb-1">Dirección Fiscal del Sujeto Retenido</label>
                             <input type="text" name="direccion_beneficiario" maxlength="250" placeholder="Av. La Paz, CC Inversiones Pareca, Piso 1, Ofic. 1-01, Puerto Cabello..."
                                    class="w-full rounded-xl bg-slate-50 border border-slate-300 px-3.5 py-2 text-xs text-slate-900">
+                        </div>
+
+                        <div class="sm:col-span-4">
+                            <label class="block text-xs font-medium text-slate-700 mb-1">Correo Electrónico (SNAT/2026/00093) <span class="text-rose-400">*</span></label>
+                            <input type="email" name="email_beneficiario" required maxlength="150" placeholder="proveedor@correo.com"
+                                   class="w-full rounded-xl bg-slate-50 border border-slate-300 px-3.5 py-2 text-xs text-slate-900">
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs font-medium text-slate-700 mb-1">Tasa BCV (Bs./USD) <span class="text-rose-400">*</span></label>
+                            <input type="number" step="0.0001" min="0.01" name="tasa_bcv" required
+                                   value="<?= e(number_format((float)($emp['tasa_bcv_actual'] ?? 45.00), 2, '.', '')) ?>"
+                                   class="w-full rounded-xl bg-slate-50 border border-slate-300 px-3 py-2 text-xs font-mono text-slate-900">
                         </div>
 
                         <div class="sm:col-span-2">
